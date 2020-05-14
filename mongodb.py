@@ -7,7 +7,7 @@ import datetime
 ###############################################################################
 
 # Authentication Database認證資料庫
-Authdb='jimmystockdb'
+Authdb='sunnystockdb'
 coll='mydb'
 
 ##### 資料庫連接 #####
