@@ -1,3 +1,5 @@
+gunicorn
+Flask
 line-bot-sdk
 bs4
 flask
