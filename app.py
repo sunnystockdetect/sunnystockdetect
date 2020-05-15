@@ -214,7 +214,8 @@ def handle_message(event):
     )
     '''
 
-    #TemplateSendMessage - CarouselTemplate
+    #TemplateSendMessage - CarouselTemplate  OK
+    '''
     message = TemplateSendMessage(
         alt_text='Carousel template',
         template=CarouselTemplate(
@@ -262,7 +263,32 @@ def handle_message(event):
             ]
         )
     )
+    '''
 
+    #TemplateSendMessage - ImageCarouselTemplate
+    message = TemplateSendMessage(
+        alt_text='ImageCarousel template',
+        template=ImageCarouselTemplate(
+            columns=[
+                ImageCarouselColumn(
+                    image_url='https://i.imgur.com/0HlQo0e.jpg',
+                    action=PostbackTemplateAction(
+                        label='postback1',
+                        text='postback text1',
+                        data='action=buy&itemid=1'
+                    )
+                ),
+                ImageCarouselColumn(
+                    image_url='https://i.imgur.com/0HlQo0e.jpg',
+                    action=PostbackTemplateAction(
+                        label='postback2',
+                        text='postback text2',
+                        data='action=buy&itemid=2'
+                    )
+                )
+            ]
+        )
+    )
 
     #LocationSendMessage（位置訊息）OK
     '''
