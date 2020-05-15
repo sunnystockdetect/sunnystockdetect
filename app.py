@@ -88,9 +88,9 @@ def handle_message(event):
 
 
     #'''
-    if str(decesion=='bye'):
+    if str(event.message.text)=='bye':
         #回覆用戶
-        message='byebye'
+        message=TextSendMessage('byebye')
         line_bot_api.reply_message(event.reply_token, message)
         #離開
         #if str(event.source.type)=='group':
