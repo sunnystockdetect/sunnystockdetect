@@ -14,8 +14,8 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('fkZZVXaAF/e48XU6uQ5m/Ma1UdPVo2Cz7s+risWsSmh4NyMUGj0OqzxPWfoq02jah1VQa+9uZTUWDWP/ItVz2ILXr8EaKACOM/XttyexVjZl8XP4us8yztBS//D+PHai6iyDoJk/nTx/2RSuxO9yAAdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
 handler = WebhookHandler('1c947d2476365222ae038aebe1b202c0')
-# 必須放上自己的You User ID
-line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', TextSendMessage(text='您好!我已準備提供服務...'))
+# 必須放上自己的You User ID (PUSH指令要收費)
+#line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', TextSendMessage(text='您好!我已準備提供服務...'))
 
 
 
@@ -56,13 +56,16 @@ def handle_message(event):
     profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
     uname=profile.display_name
-    #texttemp=uid+'('+uname+')'+'說：'+event.message.text
-    
-    texttemp=event.message.text
-    message=TextSendMessage(texttemp)
+    texttemp=uid+'('+uname+')'+'說：'+event.message.text
+
+    texttemp1=event.message.text
+    decesion=TextSendMessage(texttemp1)
+    texttemp2=event.source.type.ToLower()
+    message=TextSendMessage(texttemp2)
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+
     '''
-    if message=='bye':
+    if decesion=='bye':
         #回覆用戶
         line_bot_api.reply_message(event.reply_token, ('bye-bye'+event.source.type.ToLower()))
         #離開
