@@ -143,7 +143,8 @@ def handle_message(event):
     )
     '''
 
-    #ImagemapSendMessage （組圖訊息）
+    #ImagemapSendMessage （組圖訊息）不知道怎麼用
+    '''
     message = ImagemapSendMessage(
     base_url='https://i.imgur.com/',
     alt_text='this is an imagemap',
@@ -162,6 +163,32 @@ def handle_message(event):
                 )
             )
         ]
+    )
+    '''
+
+    #TemplateSendMessage - ButtonsTemplate （按鈕介面訊息）
+    message = TemplateSendMessage(
+        alt_text='Buttons template',
+        template=ButtonsTemplate(
+            thumbnail_image_url='https://i.imgur.com/0HlQo0e.jpg',
+            title='Menu',
+            text='Please select',
+            actions=[
+                PostbackTemplateAction(
+                    label='postback',
+                    text='postback text',
+                    data='action=buy&itemid=1'
+                ),
+                MessageTemplateAction(
+                    label='message',
+                    text='message text'
+                ),
+                URITemplateAction(
+                    label='uri',
+                    uri='https://i.imgur.com/'
+                )
+            ]
+        )
     )
 
     #LocationSendMessage（位置訊息）OK
