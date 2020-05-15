@@ -37,7 +37,6 @@ def callback():
 @handler.add(JoinEvent)
 def handle_join(event):
     newcoming_text = "謝謝邀請「晴股偵測儀」來至此群組！！我會盡力為大家服務的～"
-
     line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=newcoming_text)
@@ -46,6 +45,11 @@ def handle_join(event):
 
 @handler.add(LeaveEvent)
 def handle_leave(event):
+    leave_text = "好狠啊!!我被踢掉了QQ"
+    line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text=leave_text)
+        )
     print("leave Event =", event)
     print("我被踢掉了QQ 相關資訊", event.source)
 
@@ -66,6 +70,8 @@ def handle_message(event):
         groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
         gid=groupprofile.group_id
         #gname=groupprofile.display_name
+        gid = str(event.source.group_id)
+        #event.source.group_id.display_name
 
         
         #gid='111'
