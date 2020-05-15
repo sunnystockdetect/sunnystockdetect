@@ -34,24 +34,24 @@ def callback():
         abort(400)
     return 'OK'
 
-@handler.add(JoinEvent)
+@handler.add(JoinEvent) #經測試，加入新群會觸發
 def handle_join(event):
     newcoming_text = "謝謝邀請「晴股偵測儀」來至此群組！！我會盡力為大家服務的～"
     line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=newcoming_text)
         )
-    print("JoinEvent =", JoinEvent)
+    #print("JoinEvent =", JoinEvent)
 
-@handler.add(LeaveEvent)
+@handler.add(LeaveEvent)    #經測試，退群不會觸發
 def handle_leave(event):
     leave_text = "好狠啊!!我被踢掉了QQ"
     line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=leave_text)
         )
-    print("leave Event =", event)
-    print("我被踢掉了QQ 相關資訊", event.source)
+    #print("leave Event =", event)
+    #print("我被踢掉了QQ 相關資訊", event.source)
 
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
@@ -87,7 +87,7 @@ def handle_message(event):
     '''
 
 
-    #'''
+    '''
     if str(event.message.text)=='bye':
         #離開
         if str(event.source.type)=='group':
@@ -99,7 +99,7 @@ def handle_message(event):
             message=TextSendMessage('拜拜')
             line_bot_api.reply_message(event.reply_token, message)
           
-    #'''
+    '''
 
     #取得說話者資料(針對群組)
 
@@ -127,13 +127,13 @@ def handle_message(event):
     )
     '''
 
-    #AudioSendMessage（音訊訊息）
-    '''
+    #AudioSendMessage（音訊訊息）找不到可以存放m4a的雲端
+    #'''
     message = AudioSendMessage(
-        original_content_url='https://example.com/original.m4a',
+        original_content_url='https://clyp.it/gieuaa3i.m4a',
         duration=240000
     )
-    '''
+    #'''
 
     #LocationSendMessage（位置訊息）OK
     '''
@@ -149,7 +149,7 @@ def handle_message(event):
     #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)    #這寫法可以
     #line_bot_api.push_message(uid, message) #這寫法可以(要錢)
     #line_bot_api.reply_message(uid, message) #這寫法不行
-    #line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
 import os
 if __name__ == "__main__":
