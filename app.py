@@ -56,13 +56,15 @@ def handle_message(event):
     profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
     uname=profile.display_name
-    texttemp=uid+'('+uname+')'+'說：'+event.message.text
-
-    message=event.message.text
+    #texttemp=uid+'('+uname+')'+'說：'+event.message.text
+    
+    texttemp=event.message.text
+    message=TextSendMessage(texttemp)
+    line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     '''
     if message=='bye':
         #回覆用戶
-        line_bot_api.reply_messagee(event.reply_token, ('bye-bye'+event.source.type.ToLower()))
+        line_bot_api.reply_message(event.reply_token, ('bye-bye'+event.source.type.ToLower()))
         #離開
         if (event.source.type.ToLower() == 'room'):
             line_bot_api.leave_group
@@ -119,7 +121,7 @@ def handle_message(event):
     #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)    #這寫法可以
     #line_bot_api.push_message(uid, message) #這寫法可以(要錢)
     #line_bot_api.reply_message(uid, message) #這寫法不行
-    line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    #line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
 import os
 if __name__ == "__main__":
