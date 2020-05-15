@@ -60,12 +60,13 @@ def handle_message(event):
 
     if event.message.text=='bye':
         #回覆用戶
-        line_bot_api.Utility.reply_messagee(event.reply_token, ('bye-bye'+event.source.type.ToLower()))
+        line_bot_api.reply_messagee(event.reply_token, ('bye-bye'+event.source.type.ToLower()))
         #離開
         if (event.source.type.ToLower() == 'room'):
-            line_bot_api.Utility.LeaveRoom(event.source.roomId)
+            line_bot_api.leave_group
+            line_bot_api.leaveroom(event.source.roomId)
         elif (event.source.type.ToLower() == 'group'):
-            line_bot_api.Utility.LeaveGroup(event.source.roomId)
+            line_bot_api.leave_group(event.source.roomId)
 
 
     #取得說話者資料(針對群組)
