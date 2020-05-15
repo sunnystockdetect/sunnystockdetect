@@ -97,8 +97,8 @@ def handle_message(event):
     uname=profile.display_name
     #texttemp=uname+'('+uid+')說：'+event.message.text
     texttemp='('+uname+')說：'+event.message.text 
-    usesrpeak=str(event.message.text) #使用者講的話
-    if re.match('[0-9]{4}[<>][0-9]',usesrpeak):     # 先判斷是否是使用者要用來存股票的
+    userspeak=str(event.message.text) #使用者講的話
+    if re.match('[0-9]{4}[<>][0-9]',userspeak):     # 先判斷是否是使用者要用來存股票的
         message = TextSendMessage('儲存股票')
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     elif re.match('刪除[0-9]{4}',userspeak): #刪除存在資料庫裡面的股票
