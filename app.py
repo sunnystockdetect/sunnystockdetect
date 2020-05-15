@@ -42,22 +42,22 @@ def handle_message(event):
     #message = TextSendMessage(text='Hello, world')
 
     #ImageSendMessage（圖片訊息）
-    '''
+    #'''
     message = ImageSendMessage(
         original_content_url='https://sunnystockdetect.herokuapp.com/callback/YellowSpyder.jpg',
         preview_image_url='https://sunnystockdetect.herokuapp.com/callback/YellowSpyder.jpg'
     )    
-    '''
-
-    #LocationSendMessage（位置訊息）
     #'''
+
+    #LocationSendMessage（位置訊息）OK
+    '''
     message = LocationSendMessage(
         title='my location',
         address='Tokyo',
         latitude=35.65910807942215,
         longitude=139.70372892916203
     )
-    #'''
+    '''
     line_bot_api.reply_message(event.reply_token, message)
 
 
