@@ -145,7 +145,7 @@ def handle_message(event):
 
     #ImagemapSendMessage （組圖訊息）
     message = ImagemapSendMessage(
-    base_url='https://i.imgur.com/0HlQo0e.jpg',
+    base_url='https://i.imgur.com/',
     alt_text='this is an imagemap',
     base_size=BaseSize(height=1040, width=1040),
     actions=[
