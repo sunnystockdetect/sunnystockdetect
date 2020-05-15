@@ -63,8 +63,9 @@ def handle_message(event):
     gid=profilegroup.group_id
     gname=profilegroup.display_name
     texttemp2='('+uname+')在'+gid+'('+gname+')說：'+event.message.text
-    message = TextSendMessage(texttemp)
     '''
+    message = TextSendMessage(texttemp)
+  
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
     '''
