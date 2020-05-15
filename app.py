@@ -56,23 +56,23 @@ def handle_leave(event):
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    decesion=TextSendMessage(event.message.text)
+    #decesion=TextSendMessage(event.message.text)
     #line_bot_api.reply_message(event.reply_token, decesion) #這寫法可以(不要錢)
-    messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
+    #messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
     #line_bot_api.reply_message(event.reply_token, messagetype) #這寫法可以(不要錢)
 
-    '''
+    #'''
     if str(event.source.type)=='group':
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
         uname=profile.display_name
         #群組的ID與名稱試不出來
-        #groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+        groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
         #gid=groupprofile.group_id
-        #gname=groupprofile.display_name
+        gname=groupprofile.display_name
 
         gid='111'
-        gname='222'
+        #gname='222'
         texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
         message = TextSendMessage(texttemp)  
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
@@ -84,22 +84,22 @@ def handle_message(event):
         texttemp=uname+'('+uid+')說：'+event.message.text
         message = TextSendMessage(texttemp)  
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-    '''
-
-
     #'''
+
+
+    '''
     if str(event.message.text)=='bye':
         #離開
         if str(event.source.type)=='group':
             #回覆用戶
             message=TextSendMessage('群組拜拜')
             line_bot_api.reply_message(event.reply_token, message)
-            line_bot_api.leave_group(event.source.group_id)
+            line_bot_api.leave_group(event.source.group_id) #可以自動退出
         else:
             message=TextSendMessage('拜拜')
             line_bot_api.reply_message(event.reply_token, message)
           
-    #'''
+    '''
 
     #取得說話者資料(針對群組)
 
