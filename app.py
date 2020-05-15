@@ -193,7 +193,8 @@ def handle_message(event):
     )
     '''
 
-    #TemplateSendMessage - ConfirmTemplate（確認介面訊息）
+    #TemplateSendMessage - ConfirmTemplate（確認介面訊息）OK
+    '''
     message = TemplateSendMessage(
         alt_text='Confirm template',
         template=ConfirmTemplate(
@@ -211,7 +212,56 @@ def handle_message(event):
             ]
         )
     )
+    '''
 
+    #TemplateSendMessage - CarouselTemplate
+    message = TemplateSendMessage(
+        alt_text='Carousel template',
+        template=CarouselTemplate(
+            columns=[
+                CarouselColumn(
+                    thumbnail_image_url='https://i.imgur.com/0HlQo0e.jpg',
+                    title='this is menu1',
+                    text='description1',
+                    actions=[
+                        PostbackTemplateAction(
+                            label='postback1',
+                            text='postback text1',
+                            data='action=buy&itemid=1'
+                        ),
+                        MessageTemplateAction(
+                            label='message1',
+                            text='message text1'
+                        ),
+                        URITemplateAction(
+                            label='uri1',
+                            uri='https://i.imgur.com/'
+                        )
+                    ]
+                ),
+                CarouselColumn(
+                    thumbnail_image_url='https://i.imgur.com/0HlQo0e.jpg',
+                    title='this is menu2',
+                    text='description2',
+                    actions=[
+                        PostbackTemplateAction(
+                            label='postback2',
+                            text='postback text2',
+                            data='action=buy&itemid=2'
+                        ),
+                        MessageTemplateAction(
+                            label='message2',
+                            text='message text2'
+                        ),
+                        URITemplateAction(
+                            label='uri2',
+                            uri='https://i.imgur.com/'
+                        )
+                    ]
+                )
+            ]
+        )
+    )
 
 
     #LocationSendMessage（位置訊息）OK
