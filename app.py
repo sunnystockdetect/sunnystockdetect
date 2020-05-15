@@ -50,8 +50,8 @@ def handle_message(event):
     '''
     #VideoSendMessage（影片訊息）
     message = VideoSendMessage(
-        original_content_url='https://i.imgur.com/5N3ElOk.mp4',
-        preview_image_url='https://i.imgur.com/5N3ElOk.mp4'
+        original_content_url='https://i.imgur.com/5N3ElOk.mp4', #這邊要放影片
+        preview_image_url='https://i.imgur.com/0HlQo0e.jpg'   #這邊要放圖片
     )
 
 
