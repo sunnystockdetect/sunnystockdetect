@@ -36,9 +36,9 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     #取得說話者資料
-    profile=line_bot_api.get_profile(event.soutce.user_id)
+    profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
-
+    texttemp=uid+'-'+event.message.text
 
     #TextSendMessage （文字訊息）OK
     #message = TextSendMessage(text=event.message.text)
@@ -80,7 +80,7 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.push_message(event.reply_token, message)   #這寫法不行
     #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)
-    line_bot_api.push_message(uid, message)
+    line_bot_api.push_message(uid, message) #這寫法不行
 
 import os
 if __name__ == "__main__":
