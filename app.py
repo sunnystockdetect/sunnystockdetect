@@ -60,7 +60,7 @@ def handle_message(event):
 
     texttemp1=event.message.text
     decesion=TextSendMessage(texttemp1)
-    texttemp2=event.source.type.ToLower()
+    texttemp2=event.source.type
     message=TextSendMessage(texttemp2)
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
