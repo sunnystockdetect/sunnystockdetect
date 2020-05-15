@@ -135,13 +135,34 @@ def handle_message(event):
     )
     '''
 
-    #StickerSendMessage（貼圖訊息）
+    #StickerSendMessage（貼圖訊息）OK
+    '''
     message = StickerSendMessage(
     package_id='1',
     sticker_id='1'
     )
+    '''
 
-
+    #ImagemapSendMessage （組圖訊息）
+    message = ImagemapSendMessage(
+    base_url='https://i.imgur.com/0HlQo0e.jpg',
+    alt_text='this is an imagemap',
+    base_size=BaseSize(height=1040, width=1040),
+    actions=[
+            URIImagemapAction(
+                link_uri='https://i.imgur.com/',
+                area=ImagemapArea(
+                    x=0, y=0, width=520, height=1040
+                )
+            ),
+            MessageImagemapAction(
+                text='hello',
+                area=ImagemapArea(
+                    x=520, y=0, width=520, height=1040
+                )
+            )
+        ]
+    )
 
     #LocationSendMessage（位置訊息）OK
     '''
