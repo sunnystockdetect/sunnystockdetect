@@ -44,8 +44,8 @@ def handle_message(event):
     #ImageSendMessage（圖片訊息）
     #'''
     message = ImageSendMessage(
-        original_content_url='https://github.com/sunnystockdetect/sunnystockdetect/blob/master/YellowSpyder.jpg',
-        preview_image_url='https://github.com/sunnystockdetect/sunnystockdetect/blob/master/YellowSpyder.jpg'
+        original_content_url='https://i.imgur.com/0HlQo0e.jpg',
+        preview_image_url='https://i.imgur.com/0HlQo0e.jpg'
     )    
     #'''
 
