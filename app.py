@@ -94,7 +94,7 @@ def handle_message(event):
             #回覆用戶
             message=TextSendMessage('群組拜拜')
             line_bot_api.reply_message(event.reply_token, message)
-            line_bot_api.leave_group(event.source.roomId)
+            line_bot_api.leave_group(event.source.group_id)
         else:
             message=TextSendMessage('拜拜')
             line_bot_api.reply_message(event.reply_token, message)
