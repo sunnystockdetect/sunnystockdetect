@@ -52,30 +52,27 @@ def handle_leave(event):
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #取得說話者資料(針對個人)
-    profile=line_bot_api.get_profile(event.source.user_id)
-    uid=profile.user_id #使用者ID
-    uname=profile.display_name
-    texttemp=uname+'('+uid+')說：'+event.message.text
+    decesion=TextSendMessage(event.message.text)
+    messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
 
-    #texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
-
-    '''
-    profilegroup=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
-    gid=profilegroup.group_id
-    gname=profilegroup.display_name
-    texttemp2='('+uname+')在'+gid+'('+gname+')說：'+event.message.text
-    '''
-    message = TextSendMessage(texttemp)  
-    line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-
-    '''
-    texttemp3=event.message.text
-    decesion=TextSendMessage(texttemp3)
-    texttemp4=event.source.type #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
-    message1=TextSendMessage(texttemp4)
-    line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-    '''
+    if messagetype=='group':
+        profile=line_bot_api.get_profile(event.source.user_id)
+        uid=profile.user_id #使用者ID
+        uname=profile.display_name
+        groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+        gid=groupprofile.group_id
+        gname=groupprofile.display_name
+        texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
+        message = TextSendMessage(texttemp)  
+        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    elif messagetype=='user':
+        #取得說話者資料(針對個人)
+        profile=line_bot_api.get_profile(event.source.user_id)
+        uid=profile.user_id #使用者ID
+        uname=profile.display_name
+        texttemp=uname+'('+uid+')說：'+event.message.text
+        message = TextSendMessage(texttemp)  
+        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
     '''
     if decesion=='bye':
