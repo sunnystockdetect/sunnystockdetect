@@ -86,7 +86,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     '''
 
-
+    #測試用指令自動退出群組
     '''
     if str(event.message.text)=='bye':
         #離開
@@ -128,12 +128,20 @@ def handle_message(event):
     '''
 
     #AudioSendMessage（音訊訊息）找不到可以存放m4a的雲端
-    #'''
+    '''
     message = AudioSendMessage(
         original_content_url='https://clyp.it/gieuaa3i.m4a',
         duration=240000
     )
-    #'''
+    '''
+
+    #StickerSendMessage（貼圖訊息）
+    message = StickerSendMessage(
+    package_id='1',
+    sticker_id='1'
+    )
+
+
 
     #LocationSendMessage（位置訊息）OK
     '''
