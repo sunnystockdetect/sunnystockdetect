@@ -38,7 +38,8 @@ def handle_message(event):
     #取得說話者資料
     profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
-    texttemp=uid+'說：'+event.message.text
+    uname=profile.display_name
+    texttemp=uid+'('+uname+')'+'說：'+event.message.text
 
     #TextSendMessage （文字訊息）OK
     #message = TextSendMessage(text=event.message.text)
