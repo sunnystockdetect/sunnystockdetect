@@ -89,15 +89,16 @@ def handle_message(event):
 
     #'''
     if str(event.message.text)=='bye':
-        #回覆用戶
-        message=TextSendMessage('byebye')
-        line_bot_api.reply_message(event.reply_token, message)
         #離開
         if str(event.source.type)=='group':
+            #回覆用戶
+            message=TextSendMessage('群組拜拜')
+            line_bot_api.reply_message(event.reply_token, message)
             line_bot_api.leave_group(event.source.roomId)
         else:
-            message=TextSendMessage('這裏不是群組')
-            line_bot_api.reply_message(event.reply_token, message)            
+            message=TextSendMessage('拜拜')
+            line_bot_api.reply_message(event.reply_token, message)
+          
     #'''
 
     #取得說話者資料(針對群組)
