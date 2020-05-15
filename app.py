@@ -69,7 +69,8 @@ def handle_message(event):
         uid=profile.user_id #使用者ID
         uname=profile.display_name
         #群組的ID與名稱試不出來
-        #groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+        groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+
         #gid=groupprofile.group_id  #不能這樣使用
         #gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
 
@@ -99,9 +100,11 @@ def handle_message(event):
     texttemp='('+uname+')說：'+event.message.text 
     userspeak=str(event.message.text) #使用者講的話
     if re.match('[0-9]{4}[<>][0-9]',userspeak):     # 先判斷是否是使用者要用來存股票的
+        mongodb.write_user_stock_fountion(stock=usespeak[0:4], bs=usespeak[4:5], price=usespeak[5:])
         message = TextSendMessage('儲存股票')
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     elif re.match('刪除[0-9]{4}',userspeak): #刪除存在資料庫裡面的股票
+        mongodb.delete_user_stock_fountion(stock=usespeak[2:])
         message = TextSendMessage('刪除存在資料庫裡面的股票')
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     else:
