@@ -58,12 +58,22 @@ def handle_message(event):
     uname=profile.display_name
     texttemp=uid+'('+uname+')'+'說：'+event.message.text
 
-    texttemp1=event.message.text
-    decesion=TextSendMessage(texttemp1)
-    texttemp2=event.source.type
-    message=TextSendMessage(texttemp2)
+
+    profilegroup=line_bot_api.get_group_member_profile(event.source.group_id,event.source.user_id)
+    groupid = profilegroup.group_id
+    groupname=profilegroup.display_name
+    texttemp2='('+uname+')在'+groupid+'('+groupname+')說：'+event.message.text
+    message = TextSendMessage(texttemp2)
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
+    '''
+    texttemp3=event.message.text
+    decesion=TextSendMessage(texttemp3)
+    texttemp4=event.source.type #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
+    message1=TextSendMessage(texttemp4)
+    line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    '''
+    
     '''
     if decesion=='bye':
         #回覆用戶
