@@ -97,7 +97,8 @@ def handle_message(event):
     #line_bot_api.push_message(event.reply_token, message)   #這寫法不行
     #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)    #這寫法可以
     #line_bot_api.push_message(uid, message) #這寫法可以(要錢)
-    line_bot_api.reply_message(uid, message)
+    #line_bot_api.reply_message(uid, message)
+    line_bot_api.reply_message(event.reply_token, message)
 
 import os
 if __name__ == "__main__":
