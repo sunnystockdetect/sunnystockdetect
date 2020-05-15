@@ -61,16 +61,16 @@ def handle_message(event):
     messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
     #line_bot_api.reply_message(event.reply_token, messagetype) #這寫法可以(不要錢)
 
-    #'''
+    '''
     if str(event.source.type)=='group':
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
         uname=profile.display_name
-        '''群組的ID與名稱試不出來
-        groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
-        gid=groupprofile.group_id
-        gname=groupprofile.display_name
-        ''' 
+        #群組的ID與名稱試不出來
+        #groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+        #gid=groupprofile.group_id
+        #gname=groupprofile.display_name
+
         gid='111'
         gname='222'
         texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
@@ -84,18 +84,18 @@ def handle_message(event):
         texttemp=uname+'('+uid+')說：'+event.message.text
         message = TextSendMessage(texttemp)  
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    '''
+
+
     #'''
-    '''
-    if decesion=='bye':
+    if str(decesion=='bye'):
         #回覆用戶
-        line_bot_api.reply_message(event.reply_token, ('bye-bye'+event.source.type.ToLower()))
+        message='byebye'
+        line_bot_api.reply_message(event.reply_token, message)
         #離開
-        if (event.source.type.ToLower() == 'room'):
-            line_bot_api.leave_group
-            line_bot_api.leaveroom(event.source.roomId)
-        elif (event.source.type.ToLower() == 'group'):
-            line_bot_api.leave_group(event.source.roomId)
-    '''
+        #if str(event.source.type)=='group':
+        #    line_bot_api.leave_group(event.source.roomId)
+    #'''
 
     #取得說話者資料(針對群組)
 
