@@ -62,12 +62,14 @@ def handle_message(event):
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
         uname=profile.display_name
-        '''
+
         groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
         gid=groupprofile.group_id
+        '''
         gname=groupprofile.display_name
         '''
-        gid='111'
+        
+        #gid='111'
         gname='222'
         texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
         message = TextSendMessage(texttemp)  
