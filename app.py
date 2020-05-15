@@ -35,8 +35,12 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    #TextSendMessage （文字訊息）OK
+    #message = TextSendMessage(text=event.message.text)
+
     #TextSendMessage （文字訊息）
-    message = TextSendMessage(text=event.message.text)
+    message = TextSendMessage(text='Hello, world')
+    line_bot_api.reply_message(event.reply_token, message)
 
     #ImageSendMessage（圖片訊息）
     '''
