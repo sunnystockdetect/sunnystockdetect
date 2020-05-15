@@ -44,8 +44,8 @@ def handle_message(event):
     #ImageSendMessage（圖片訊息）
     #'''
     message = ImageSendMessage(
-        original_content_url='https://sunnystockdetect.herokuapp.com/callback/YellowSpyder.jpg',
-        preview_image_url='https://sunnystockdetect.herokuapp.com/callback/YellowSpyder.jpg'
+        original_content_url='https://drive.google.com/open?id=1F42g4hLIAX1Pr7DayJFOqV5TtzZ6GSo8',
+        preview_image_url='https://drive.google.com/open?id=1F42g4hLIAX1Pr7DayJFOqV5TtzZ6GSo8'
     )    
     #'''
 
