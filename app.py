@@ -53,8 +53,9 @@ def handle_leave(event):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     decesion=TextSendMessage(event.message.text)
-    line_bot_api.reply_message(event.reply_token, decesion) #這寫法可以(不要錢)
-    #messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
+    #line_bot_api.reply_message(event.reply_token, decesion) #這寫法可以(不要錢)
+    messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
+    line_bot_api.reply_message(event.reply_token, messagetype) #這寫法可以(不要錢)
 
     '''
     if messagetype=='group':
