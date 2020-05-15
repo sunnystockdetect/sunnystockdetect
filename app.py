@@ -17,6 +17,15 @@ handler = WebhookHandler('1c947d2476365222ae038aebe1b202c0')
 # 必須放上自己的You User ID
 line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', TextSendMessage(text='您好!我已準備提供服務...'))
 
+#取得 http Post RawData(should be JSON)
+'''
+postData = request.Content.ReadAsStringAsync().Result
+#剖析JSON
+ReceivedMessage = line_bot_api.Utility.Parsing(postData)
+item = ReceivedMessage.events.FirstOrDefault()
+message = ''
+'''
+
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -35,11 +44,13 @@ def callback():
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #取得說話者資料
+    #取得說話者資料(針對個人)
     profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
     uname=profile.display_name
     texttemp=uid+'('+uname+')'+'說：'+event.message.text
+
+    #取得說話者資料(針對群組)
 
     #TextSendMessage （文字訊息）OK
     #message = TextSendMessage(text=event.message.text)
@@ -85,7 +96,8 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.push_message(event.reply_token, message)   #這寫法不行
     #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)    #這寫法可以
-    line_bot_api.push_message(uid, message) #這寫法可以
+    #line_bot_api.push_message(uid, message) #這寫法可以(要錢)
+    line_bot_api.reply_message(uid, message)
 
 import os
 if __name__ == "__main__":
