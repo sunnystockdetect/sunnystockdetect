@@ -39,8 +39,7 @@ def handle_message(event):
     #message = TextSendMessage(text=event.message.text)
 
     #TextSendMessage （文字訊息）
-    message = TextSendMessage(text='Hello, world')
-    line_bot_api.reply_message(event.reply_token, message)
+    #message = TextSendMessage(text='Hello, world')
 
     #ImageSendMessage（圖片訊息）
     '''
@@ -51,14 +50,14 @@ def handle_message(event):
     '''
 
     #LocationSendMessage（位置訊息）
-    '''
+    #'''
     message = LocationSendMessage(
         title='my location',
         address='Tokyo',
         latitude=35.65910807942215,
         longitude=139.70372892916203
     )
-    '''
+    #'''
     line_bot_api.reply_message(event.reply_token, message)
 
 
