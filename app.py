@@ -48,12 +48,20 @@ def handle_message(event):
         preview_image_url='https://i.imgur.com/0HlQo0e.jpg'
     )    
     '''
-    #VideoSendMessage（影片訊息）
+    #VideoSendMessage（影片訊息）OK
+    #'''
     message = VideoSendMessage(
         original_content_url='https://i.imgur.com/5N3ElOk.mp4', #這邊要放影片
         preview_image_url='https://i.imgur.com/0HlQo0e.jpg'   #這邊要放圖片
     )
-
+    #'''
+    '''
+    #AudioSendMessage（音訊訊息）
+    message = AudioSendMessage(
+        original_content_url='https://example.com/original.m4a',
+        duration=240000
+    )
+    '''
 
     #LocationSendMessage（位置訊息）OK
     '''
@@ -65,7 +73,7 @@ def handle_message(event):
     )
     '''
     #line_bot_api.reply_message(event.reply_token, message)
-    line_bot_api.push_message(event.reply_token, message)
+    line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)
 
 import os
 if __name__ == "__main__":
