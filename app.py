@@ -53,8 +53,10 @@ def handle_leave(event):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     decesion=TextSendMessage(event.message.text)
+    print(event.message.text)
     messagetype=TextSendMessage(event.source.type) #若是使用者傳訊息，則傳回user；若是群組傳訊息，則傳回group
-
+    print(event.source.type)
+    '''
     if messagetype=='group':
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
@@ -73,7 +75,7 @@ def handle_message(event):
         texttemp=uname+'('+uid+')說：'+event.message.text
         message = TextSendMessage(texttemp)  
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-
+    '''
     '''
     if decesion=='bye':
         #回覆用戶
