@@ -36,7 +36,7 @@ def callback():
 
 @handler.add(JoinEvent)
 def handle_join(event):
-    newcoming_text = "謝謝邀請我這個機器來至此群組！！我會盡力為大家服務的～"
+    newcoming_text = "謝謝邀請「晴股偵測儀」來至此群組！！我會盡力為大家服務的～"
 
     line_bot_api.reply_message(
             event.reply_token,
