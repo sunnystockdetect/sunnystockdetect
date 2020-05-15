@@ -41,13 +41,19 @@ def handle_message(event):
     #TextSendMessage （文字訊息）
     #message = TextSendMessage(text='Hello, world')
 
-    #ImageSendMessage（圖片訊息）
-    #'''
+    #ImageSendMessage（圖片訊息）OK
+    '''
     message = ImageSendMessage(
         original_content_url='https://i.imgur.com/0HlQo0e.jpg',
         preview_image_url='https://i.imgur.com/0HlQo0e.jpg'
     )    
-    #'''
+    '''
+    #VideoSendMessage（影片訊息）
+    message = VideoSendMessage(
+        original_content_url='https://i.imgur.com/5N3ElOk.mp4',
+        preview_image_url='https://i.imgur.com/5N3ElOk.mp4'
+    )
+
 
     #LocationSendMessage（位置訊息）OK
     '''
