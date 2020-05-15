@@ -46,7 +46,7 @@ def handle_message(event):
     '''
 
     #LocationSendMessage（位置訊息）
-    message = ImageSendMessage(
+    message = LocationSendMessage(
         title='my location',
         address='Tokyo',
         latitude=35.65910807942215,
