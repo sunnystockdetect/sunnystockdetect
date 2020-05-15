@@ -84,26 +84,29 @@ def handle_message(event):
             message=TextSendMessage('太狠了，群組拜拜!!!')
             line_bot_api.reply_message(event.reply_token, message)
             line_bot_api.leave_group(event.source.group_id) #可以自動退出
+        '''
         else: 
             message = TextSendMessage(texttemp)  
             line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+        '''
     #elif str(event.source.type)=='user':
-    else:   #若不是群組說話就是使用者了
-        #取得說話者資料(針對個人)
-        profile=line_bot_api.get_profile(event.source.user_id)
-        uid=profile.user_id #使用者ID
-        uname=profile.display_name
-        #texttemp=uname+'('+uid+')說：'+event.message.text
-        texttemp='('+uname+')說：'+event.message.text 
-        if re.match('[0-9]{4}[<>][0-9]',str(event.message.text)):     # 先判斷是否是使用者要用來存股票的
-            message = TextSendMessage('儲存股票')
-            line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-        elif re.match('刪除[0-9]{4}',str(event.message.text)): #刪除存在資料庫裡面的股票
-            message = TextSendMessage('刪除存在資料庫裡面的股票')
-            line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-        else:
-            message = TextSendMessage(texttemp)  
-            line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    #else:   #若不是群組說話就是使用者了
+    #取得說話者資料(針對個人)
+    profile=line_bot_api.get_profile(event.source.user_id)
+    uid=profile.user_id #使用者ID
+    uname=profile.display_name
+    #texttemp=uname+'('+uid+')說：'+event.message.text
+    texttemp='('+uname+')說：'+event.message.text 
+    usesrpeak=str(event.message.text) #使用者講的話
+    if re.match('[0-9]{4}[<>][0-9]',usesrpeak):     # 先判斷是否是使用者要用來存股票的
+        message = TextSendMessage('儲存股票')
+        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    elif re.match('刪除[0-9]{4}',userspeak): #刪除存在資料庫裡面的股票
+        message = TextSendMessage('刪除存在資料庫裡面的股票')
+        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+    else:
+        message = TextSendMessage(texttemp)  
+        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     #'''
 
     #測試用指令自動退出群組
