@@ -44,7 +44,7 @@ def handle_message(event):
     #message = TextSendMessage(text=event.message.text)
 
     #TextSendMessage （文字訊息）OK
-    #message = TextSendMessage(texttemp)
+    message = TextSendMessage(texttemp)
 
     #TextSendMessage （文字訊息）
     #message = TextSendMessage(text='Hello, world')
