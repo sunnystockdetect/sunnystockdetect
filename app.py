@@ -64,8 +64,8 @@ def handle_message(event):
         longitude=139.70372892916203
     )
     '''
-    line_bot_api.reply_message(event.reply_token, message)
-
+    #line_bot_api.reply_message(event.reply_token, message)
+    line_bot_api.push_message(event.reply_token, message)
 
 import os
 if __name__ == "__main__":
