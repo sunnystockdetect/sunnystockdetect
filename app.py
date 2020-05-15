@@ -74,7 +74,8 @@ def handle_message(event):
         #gid='111'
         #gname='222'
         #texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
-        texttemp=uname+'('+uid+')說：'+event.message.text        
+        #texttemp=uname+'('+uid+')說：'+event.message.text    
+        texttemp='('+uname+')說：'+event.message.text      
         #若群組使用者輸入'滾'，則自動退群
         if str(event.message.text)=='滾':
             #回覆用戶
@@ -89,7 +90,8 @@ def handle_message(event):
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
         uname=profile.display_name
-        texttemp=uname+'('+uid+')說：'+event.message.text
+        #texttemp=uname+'('+uid+')說：'+event.message.text
+        texttemp='('+uname+')說：'+event.message.text 
         message = TextSendMessage(texttemp)  
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     #'''
