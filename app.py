@@ -93,8 +93,8 @@ def handle_message(event):
         message=TextSendMessage('byebye')
         line_bot_api.reply_message(event.reply_token, message)
         #離開
-        #if str(event.source.type)=='group':
-        #    line_bot_api.leave_group(event.source.roomId)
+        if str(event.source.type)=='group':
+            line_bot_api.leave_group(event.source.roomId)
     #'''
 
     #取得說話者資料(針對群組)
