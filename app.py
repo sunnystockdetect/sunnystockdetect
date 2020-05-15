@@ -38,10 +38,13 @@ def handle_message(event):
     #取得說話者資料
     profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
-    texttemp=uid+'-'+event.message.text
+    texttemp=uid+'說：'+event.message.text
 
     #TextSendMessage （文字訊息）OK
     #message = TextSendMessage(text=event.message.text)
+
+    #TextSendMessage （文字訊息）OK
+    #message = TextSendMessage(texttemp)
 
     #TextSendMessage （文字訊息）
     #message = TextSendMessage(text='Hello, world')
@@ -50,18 +53,19 @@ def handle_message(event):
     '''
     message = ImageSendMessage(
         original_content_url='https://i.imgur.com/0HlQo0e.jpg',
-        preview_image_url='https://i.imgur.com/0HlQo0e.jpg'
+        preview_imag：_url='https://i.imgur.com/0HlQo0e.jpg'
     )    
     '''
     #VideoSendMessage（影片訊息）OK
-    #'''
+    '''
     message = VideoSendMessage(
         original_content_url='https://i.imgur.com/5N3ElOk.mp4', #這邊要放影片
         preview_image_url='https://i.imgur.com/0HlQo0e.jpg'   #這邊要放圖片
     )
-    #'''
     '''
+
     #AudioSendMessage（音訊訊息）
+    '''
     message = AudioSendMessage(
         original_content_url='https://example.com/original.m4a',
         duration=240000
@@ -79,8 +83,8 @@ def handle_message(event):
     '''
     #line_bot_api.reply_message(event.reply_token, message)
     #line_bot_api.push_message(event.reply_token, message)   #這寫法不行
-    #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)
-    line_bot_api.push_message(uid, message) #這寫法不行
+    #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', message)    #這寫法可以
+    line_bot_api.push_message(uid, message) #這寫法可以
 
 import os
 if __name__ == "__main__":
