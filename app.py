@@ -66,15 +66,12 @@ def handle_message(event):
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
         uname=profile.display_name
-
+        '''群組的ID與名稱試不出來
         groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
         gid=groupprofile.group_id
-        #gname=groupprofile.display_name
-        gid = str(event.source.group_id)
-        #event.source.group_id.display_name
-
-        
-        #gid='111'
+        gname=groupprofile.display_name
+        ''' 
+        gid='111'
         gname='222'
         texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
         message = TextSendMessage(texttemp)  
