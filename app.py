@@ -95,6 +95,9 @@ def handle_message(event):
         #離開
         if str(event.source.type)=='group':
             line_bot_api.leave_group(event.source.roomId)
+        else:
+            message=TextSendMessage('這裏不是群組')
+            line_bot_api.reply_message(event.reply_token, message)            
     #'''
 
     #取得說話者資料(針對群組)
