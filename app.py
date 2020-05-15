@@ -56,10 +56,9 @@ def handle_message(event):
     profile=line_bot_api.get_profile(event.source.user_id)
     uid=profile.user_id #使用者ID
     uname=profile.display_name
-    
-    gid=profile.group_id
-    gname=profile.display_name
-    texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
+    texttemp=uname+'('+uid+')說：'+event.message.text
+
+    #texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
 
     '''
     profilegroup=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
@@ -67,8 +66,7 @@ def handle_message(event):
     gname=profilegroup.display_name
     texttemp2='('+uname+')在'+gid+'('+gname+')說：'+event.message.text
     '''
-    message = TextSendMessage(texttemp)
-  
+    message = TextSendMessage(texttemp)  
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
     '''
