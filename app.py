@@ -65,9 +65,8 @@ def handle_message(event):
 
         groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
         gid=groupprofile.group_id
-        '''
-        gname=groupprofile.display_name
-        '''
+        #gname=groupprofile.display_name
+
         
         #gid='111'
         gname='222'
