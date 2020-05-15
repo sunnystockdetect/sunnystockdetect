@@ -10,3 +10,5 @@ SnowNLP
 emoji
 pyshorteners
 scipy
+gunicorn
+dnspython
