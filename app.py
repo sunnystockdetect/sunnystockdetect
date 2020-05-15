@@ -11,6 +11,7 @@ from pymongo import MongoClient
 import urllib.parse
 import datetime
 import re
+import os
 
 app = Flask(__name__)
 
@@ -75,7 +76,7 @@ def handle_join(event):
             event.reply_token,
             TextMessage(text=newcoming_text)
         )
-    #print("JoinEvent =", JoinEvent)
+    print("JoinEvent =", JoinEvent)
 
 @handler.add(LeaveEvent)    #經測試，退群不會觸發
 def handle_leave(event):
@@ -84,8 +85,8 @@ def handle_leave(event):
             event.reply_token,
             TextMessage(text=leave_text)
         )
-    #print("leave Event =", event)
-    #print("我被踢掉了QQ 相關資訊", event.source)
+    print("leave Event =", event)
+    print("我被踢掉了QQ 相關資訊", event.source)
 
 # 處理訊息
 @handler.add(MessageEvent, message=TextMessage)
@@ -102,7 +103,7 @@ def handle_message(event):
         uname=profile.display_name
         #群組的ID與名稱試不出來
         #event.MessageEvent.user_id.reply_token
-        #groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+        groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
 
         #gid=groupprofile.group_id  #不能這樣使用
         #gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
@@ -133,11 +134,11 @@ def handle_message(event):
     texttemp='('+uname+')說：'+event.message.text 
     userspeak=str(event.message.text) #使用者講的話
     if re.match('[0-9]{4}[<>][0-9]',userspeak):     # 先判斷是否是使用者要用來存股票的
-        #write_user_stock_fountion(stock=userspeak[0:4], bs=userspeak[4:5], price=userspeak[5:])
+        write_user_stock_fountion(stock=userspeak[0:4], bs=userspeak[4:5], price=userspeak[5:])
         message = TextSendMessage('儲存股票')
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     elif re.match('刪除[0-9]{4}',userspeak): #刪除存在資料庫裡面的股票
-        #delete_user_stock_fountion(stock=userspeak[2:])
+        delete_user_stock_fountion(stock=userspeak[2:])
         message = TextSendMessage('刪除存在資料庫裡面的股票')
         line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     else:
@@ -367,7 +368,7 @@ def handle_message(event):
     #line_bot_api.reply_message(uid, message) #這寫法不行
     #line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
-import os
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
