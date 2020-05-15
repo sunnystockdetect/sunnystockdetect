@@ -59,11 +59,11 @@ def handle_message(event):
     texttemp=uid+'('+uname+')'+'說：'+event.message.text
 
 
-    profilegroup=line_bot_api.get_group_member_profile(event.source.group_id,event.source.user_id)
-    groupid = profilegroup.group_id
-    groupname=profilegroup.display_name
-    texttemp2='('+uname+')在'+groupid+'('+groupname+')說：'+event.message.text
-    message = TextSendMessage(texttemp2)
+    profilegroup=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+    gid=profilegroup.group_id
+    gname=profilegroup.display_name
+    texttemp2='('+uname+')在'+gid+'('+gname+')說：'+event.message.text
+    message = TextSendMessage(texttemp)
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
 
     '''
@@ -73,7 +73,7 @@ def handle_message(event):
     message1=TextSendMessage(texttemp4)
     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     '''
-    
+
     '''
     if decesion=='bye':
         #回覆用戶
