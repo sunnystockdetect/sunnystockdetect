@@ -95,7 +95,7 @@ def callback():
     app.logger.info("Request body: " + body)
 
     # 我加了下面那一行(測試用，將訊息輸出去HeroKU的LOG中)
-    print(body)
+    #print(body)
     # 我加了上面那一行
 
     # handle webhook body
