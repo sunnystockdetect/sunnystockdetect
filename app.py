@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 # 增加了 render_template
 from flask import Flask, request, abort, render_template
 
@@ -63,9 +61,11 @@ def show_user_stock_fountion():
 
     return cel
 
+
 @app.route("/")
 def home():
     return render_template("home.html")
+
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
