@@ -1,27 +1,3 @@
-'''
-#@handler.add(MessageEvent, message=TextMessage)
-這一行程式碼，是提醒我們的 LINE 機器人，當收到 LINE 的 MessageEvent (信息事件)，而且信息是屬於 TextMessage (文字信息)的時候，就執行下列程式碼。依照 LINE 的應用程式編程介面，LINE 的事件包括有：MessageEvent (信息事件)、FollowEvent (加好友事件)、UnfollowEvent (刪好友事件)、JoinEvent (加入聊天室事件)、LeaveEvent (離開聊天室事件)、MemberJoinedEvent (加入群組事件)、MemberLeftEvent (離開群組事件)，還有許多許多(詳見這裡➀)。而MessageEvent又依照信息內容再分成TextMessage、ImageMessage、VideoMessage、StickerMessage、FileMessage等等，當然，還有許多許多。(詳見這裡➀)
-
-#LineBotApi的物件，該物件有一個方法reply_message。顧名思義，只能用在接收到其他 LINE 使用者的時候回覆信息，而不能用在主動推送信息。要使用這個方法需要提供兩個參數。
-1、event.reply_token,
-　　reply_message的第一個參數：reply_token，只能使用一次，用完即丟。當其他使用者傳送信息給你的 LINE 聊天機器人，會產生一個reply_token，你的聊天機器人拿著這個reply_token回覆傳信息的使用者，回覆完畢，reply_token消失。因此利用reply_message只能在收到其他使用者信息的時候，回傳一則信息。
-2、TextSendMessage(text=event.message.text)
-　　reply_message的第二個參數：要執行的動作。這邊，因為我們目前設計的是一個學你說話的機器人，所以要執行的動作就是TextSendMessage。當然當然，LINE 應用程式編程介面還提供了其他包括：ImageSendMessage、VideoSendMessage、StickerSendMessage等等的許多許多動作供您選用。我們這邊先選TextSendMessage，然後輸入需要的參數，也又是文字信息的內容text。
-
-#還記得函數一開始我們幫 LINE 送過來的資料貼上了event的標籤嗎？現在就來看看event裡面到底有什麼
-event = {"reply_token":"就是代表reply_token的一串亂碼", 
-         "type":"message",
-         "timestamp":"1462629479859", 
-         "source":{"type":"user",
-                   "user_id":"就是代表user的一串亂碼"}, 
-         "message":{"id":"就是代表這次message的一串代碼", 
-                    "type":"text", 
-                    "text":"使用者傳來的文字信息內容"}} 
-
-
-
-
-'''
 from flask import Flask, request, abort
 
 from linebot import (
@@ -133,69 +109,56 @@ def handle_message(event):
     #line_bot_api.reply_message(event.reply_token, messagetype) #這寫法可以(不要錢)
 
     #'''
-    if str(event.source.type)=='group':
+    # 這次我加了下面這一行(在LINE DEVELOPERS中進行WEBHOOKS SETTINGS VERIFY有錯誤，此行可排除錯誤)
+    if event.source.user_id != 'Udeadbeefdeadbeefdeadbeefdeadbeef':
+        if str(event.source.type)=='group':
+            profile=line_bot_api.get_profile(event.source.user_id)
+            uid=profile.user_id #使用者ID
+            uname=profile.display_name
+            #群組的ID與名稱試不出來
+            #event.MessageEvent.user_id.reply_token
+            groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+
+            #gid=groupprofile.group_id  #不能這樣使用
+            #gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
+
+            #gid='111'
+            #gname='222'
+            #texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
+            #texttemp=uname+'('+uid+')說：'+event.message.text    
+            texttemp='('+uname+')說：'+event.message.text      
+            #若群組使用者輸入'滾'，則自動退群
+            if str(event.message.text).strip()=='滾':
+                #回覆用戶
+                message=TextSendMessage('太狠了，群組拜拜!!!')
+                line_bot_api.reply_message(event.reply_token, message)
+                line_bot_api.leave_group(event.source.group_id) #可以自動退出
+            # else: 
+            #     message = TextSendMessage(texttemp)  
+            #     line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+
+        #elif str(event.source.type)=='user':
+        #else:   #若不是群組說話就是使用者了
+        #取得說話者資料(針對個人)
         profile=line_bot_api.get_profile(event.source.user_id)
         uid=profile.user_id #使用者ID
         uname=profile.display_name
-        #群組的ID與名稱試不出來
-        #event.MessageEvent.user_id.reply_token
-        groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
-
-        #gid=groupprofile.group_id  #不能這樣使用
-        #gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
-
-        #gid='111'
-        #gname='222'
-        #texttemp=uname+'('+uid+')在群組'+gname+'('+gid+')說：'+event.message.text
-        #texttemp=uname+'('+uid+')說：'+event.message.text    
-        texttemp='('+uname+')說：'+event.message.text      
-        #若群組使用者輸入'滾'，則自動退群
-        if str(event.message.text)=='滾':
-            #回覆用戶
-            message=TextSendMessage('太狠了，群組拜拜!!!')
-            line_bot_api.reply_message(event.reply_token, message)
-            line_bot_api.leave_group(event.source.group_id) #可以自動退出
-        '''
-        else: 
+        #texttemp=uname+'('+uid+')說：'+event.message.text
+        texttemp='('+uname+')說：'+event.message.text 
+        userspeak=str(event.message.text) #使用者講的話
+        if re.match('[0-9]{4}[<>][0-9]',userspeak):     # 先判斷是否是使用者要用來存股票的
+            write_user_stock_fountion(stock=userspeak[0:4], bs=userspeak[4:5], price=userspeak[5:])
+            message = TextSendMessage('儲存股票')
+            line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+        elif re.match('刪除[0-9]{4}',userspeak): #刪除存在資料庫裡面的股票
+            delete_user_stock_fountion(stock=userspeak[2:])
+            message = TextSendMessage('刪除存在資料庫裡面的股票')
+            line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+        else:
             message = TextSendMessage(texttemp)  
             line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-        '''
-    #elif str(event.source.type)=='user':
-    #else:   #若不是群組說話就是使用者了
-    #取得說話者資料(針對個人)
-    profile=line_bot_api.get_profile(event.source.user_id)
-    uid=profile.user_id #使用者ID
-    uname=profile.display_name
-    #texttemp=uname+'('+uid+')說：'+event.message.text
-    texttemp='('+uname+')說：'+event.message.text 
-    userspeak=str(event.message.text) #使用者講的話
-    if re.match('[0-9]{4}[<>][0-9]',userspeak):     # 先判斷是否是使用者要用來存股票的
-        write_user_stock_fountion(stock=userspeak[0:4], bs=userspeak[4:5], price=userspeak[5:])
-        message = TextSendMessage('儲存股票')
-        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-    elif re.match('刪除[0-9]{4}',userspeak): #刪除存在資料庫裡面的股票
-        delete_user_stock_fountion(stock=userspeak[2:])
-        message = TextSendMessage('刪除存在資料庫裡面的股票')
-        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-    else:
-        message = TextSendMessage(texttemp)  
-        line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
     #'''
 
-    #測試用指令自動退出群組
-    '''
-    if str(event.message.text)=='bye':
-        #離開
-        if str(event.source.type)=='group':
-            #回覆用戶
-            #message=TextSendMessage('群組拜拜')
-            #line_bot_api.reply_message(event.reply_token, message)
-            line_bot_api.leave_group(event.source.group_id) #可以自動退出
-        else:
-            message=TextSendMessage('拜拜')
-            line_bot_api.reply_message(event.reply_token, message)
-          
-    '''
 
     #取得說話者資料(針對群組)
 
