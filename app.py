@@ -1,3 +1,27 @@
+'''
+#@handler.add(MessageEvent, message=TextMessage)
+這一行程式碼，是提醒我們的 LINE 機器人，當收到 LINE 的 MessageEvent (信息事件)，而且信息是屬於 TextMessage (文字信息)的時候，就執行下列程式碼。依照 LINE 的應用程式編程介面，LINE 的事件包括有：MessageEvent (信息事件)、FollowEvent (加好友事件)、UnfollowEvent (刪好友事件)、JoinEvent (加入聊天室事件)、LeaveEvent (離開聊天室事件)、MemberJoinedEvent (加入群組事件)、MemberLeftEvent (離開群組事件)，還有許多許多(詳見這裡➀)。而MessageEvent又依照信息內容再分成TextMessage、ImageMessage、VideoMessage、StickerMessage、FileMessage等等，當然，還有許多許多。(詳見這裡➀)
+
+#LineBotApi的物件，該物件有一個方法reply_message。顧名思義，只能用在接收到其他 LINE 使用者的時候回覆信息，而不能用在主動推送信息。要使用這個方法需要提供兩個參數。
+1、event.reply_token,
+　　reply_message的第一個參數：reply_token，只能使用一次，用完即丟。當其他使用者傳送信息給你的 LINE 聊天機器人，會產生一個reply_token，你的聊天機器人拿著這個reply_token回覆傳信息的使用者，回覆完畢，reply_token消失。因此利用reply_message只能在收到其他使用者信息的時候，回傳一則信息。
+2、TextSendMessage(text=event.message.text)
+　　reply_message的第二個參數：要執行的動作。這邊，因為我們目前設計的是一個學你說話的機器人，所以要執行的動作就是TextSendMessage。當然當然，LINE 應用程式編程介面還提供了其他包括：ImageSendMessage、VideoSendMessage、StickerSendMessage等等的許多許多動作供您選用。我們這邊先選TextSendMessage，然後輸入需要的參數，也又是文字信息的內容text。
+
+#還記得函數一開始我們幫 LINE 送過來的資料貼上了event的標籤嗎？現在就來看看event裡面到底有什麼
+event = {"reply_token":"就是代表reply_token的一串亂碼", 
+         "type":"message",
+         "timestamp":"1462629479859", 
+         "source":{"type":"user",
+                   "user_id":"就是代表user的一串亂碼"}, 
+         "message":{"id":"就是代表這次message的一串代碼", 
+                    "type":"text", 
+                    "text":"使用者傳來的文字信息內容"}} 
+
+
+
+
+'''
 from flask import Flask, request, abort
 
 from linebot import (
@@ -12,13 +36,20 @@ import urllib.parse
 import datetime
 import re
 import os
+import configparser
 
 app = Flask(__name__)
 
+# LINE 聊天機器人的基本資料
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 # Channel Access Token
-line_bot_api = LineBotApi('fkZZVXaAF/e48XU6uQ5m/Ma1UdPVo2Cz7s+risWsSmh4NyMUGj0OqzxPWfoq02jah1VQa+9uZTUWDWP/ItVz2ILXr8EaKACOM/XttyexVjZl8XP4us8yztBS//D+PHai6iyDoJk/nTx/2RSuxO9yAAdB04t89/1O/w1cDnyilFU=')
+#line_bot_api = LineBotApi('fkZZVXaAF/e48XU6uQ5m/Ma1UdPVo2Cz7s+risWsSmh4NyMUGj0OqzxPWfoq02jah1VQa+9uZTUWDWP/ItVz2ILXr8EaKACOM/XttyexVjZl8XP4us8yztBS//D+PHai6iyDoJk/nTx/2RSuxO9yAAdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi(config.get('line-bot', 'channel_access_token'))
 # Channel Secret
-handler = WebhookHandler('1c947d2476365222ae038aebe1b202c0')
+#handler = WebhookHandler('1c947d2476365222ae038aebe1b202c0')
+handler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 # 必須放上自己的You User ID (PUSH指令要收費)
 #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', TextSendMessage(text='您好!我已準備提供服務...'))
 
@@ -62,6 +93,11 @@ def callback():
     # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
+
+    # 我加了下面那一行(測試用，將訊息輸出去HeroKU的LOG中)
+    print(body)
+    # 我加了上面那一行
+
     # handle webhook body
     try:
         handler.handle(body, signature)
@@ -191,7 +227,7 @@ def handle_message(event):
     '''
     message = AudioSendMessage(
         original_content_url='https://clyp.it/gieuaa3i.m4a',
-        duration=240000
+        duration=240000 #這邊是使用者看到 UI 的顯示時間
     )
     '''
 
