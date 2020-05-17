@@ -30,8 +30,8 @@ def scheduled_job():
     for key, value in conn.getheaders():
         print(key, value)
 
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=0)
-def timed_job():
+@sched.scheduled_job('cron', day_of_week='mon-sun', hour=8)
+def ischangeday_job():
     ##### 資料庫連接(用來判斷是否已經過日，若過日，則需重新更新所需資訊) #####
     # 一次性連線
     # 建立連線用戶端
@@ -60,9 +60,6 @@ def timed_job():
             pass
     # 關閉連線用戶端
     client1.close()
-
-
-
 sched.start()
 #'''
 
