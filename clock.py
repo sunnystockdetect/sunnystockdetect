@@ -12,6 +12,13 @@ Heroku 免費 dyno 所提供的規格：
 from apscheduler.schedulers.blocking import BlockingScheduler
 import urllib.parse
 import requests
+import datetime
+import time
+from pymongo import MongoClient
+
+# 全域變數
+isChangeDay = 0	#用來判斷是否已經過日，若過日，則需重新更新所需資訊
+TodayDate = f'{datetime.date.today():%Y%m%d}'	#記錄今日的年月日(格式YYYYMMDD)
 
 sched = BlockingScheduler()
 #'''
@@ -22,6 +29,39 @@ def scheduled_job():
         
     for key, value in conn.getheaders():
         print(key, value)
+
+@sched.scheduled_job('interval', minutes=1)
+def timed_job():
+    ##### 資料庫連接(用來判斷是否已經過日，若過日，則需重新更新所需資訊) #####
+    # 一次性連線
+    # 建立連線用戶端
+    client1 = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db1 = client1['sunnystockdb']
+    results = db1.needupdate.find()
+    for result in results:
+        TodayDateLast = f'{result["ischangeday"]}'
+    if (TodayDate.strip()==TodayDateLast.strip()):
+        isChangeDay=0
+    else:
+        isChangeDay=1
+        try:
+            # 執行命令清空資料表內容
+
+            # 更新上一次更新日期紀錄   
+            try:
+                db1.needupdate.update_one({'ischangeday': TodayDateLast}, [{'$set': {'ischangeday': TodayDate}}])
+                print('更新資料成功(更新上一次更新日期紀錄)')
+            except Exception as e:
+                print('更新資料失敗(更新上一次更新日期紀錄)')
+                print(e)
+                pass
+        except Exception as e:
+            pass
+    # 關閉連線用戶端
+    client1.close()
+
+
 
 sched.start()
 #'''

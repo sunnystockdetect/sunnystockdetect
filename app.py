@@ -50,6 +50,8 @@ handler = WebhookHandler(config.get('line-bot', 'channel_secret'))
 # 必須放上自己的You User ID (PUSH指令要收費)
 #line_bot_api.push_message('U53b88e7039478edcee8eef5ae6c72142', TextSendMessage(text='您好!我已準備提供服務...'))
 
+'''
+# 計時器在本機端測試時沒問題，但送上HEROKU就不會執行，故改寫成排程並放在clock.py中送上去HEROKU執行
 # 定義計時器類別
 class RepeatingTimer(Timer):
     def run(self):
@@ -85,7 +87,7 @@ def TimeFunc():
             pass
     # 關閉連線用戶端
     client1.close()
-
+'''
 
 ##### 資料庫連接 #####
 def constructor():
@@ -565,8 +567,10 @@ def handle_message(event):
 
 
 if __name__ == "__main__":
+    '''
     # 設定計時器並啟動
     timer = RepeatingTimer(10,TimeFunc) #每30分鐘執行一次
     timer.start()
+    '''
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
