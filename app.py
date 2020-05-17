@@ -1,14 +1,4 @@
-'''
-event = {"reply_token":"就是代表reply_token的一串亂碼", 
-         "type":"message",
-         "timestamp":"1462629479859", 
-         "source":{"type":"user",
-                   "user_id":"就是代表user的一串亂碼"}, 
-         "message":{"id":"就是代表這次message的一串代碼", 
-                    "type":"text", 
-                    "text":"使用者傳來的文字信息內容"}}
-'''
-
+# -*- coding: UTF-8 -*-
 from __future__ import unicode_literals
 from apscheduler.schedulers.blocking import BlockingScheduler
 # 增加了 render_template
@@ -27,12 +17,18 @@ import datetime
 import re
 import os
 import configparser
-import time
-from threading import Timer
+import base64
+import hashlib
+from Crypto import Random
+from Crypto.Cipher import AES
+import random   #调用random模块
+import string   #调用string模块
+#import time
+#from threading import Timer
 
 # 全域變數
-isChangeDay = 0	#用來判斷是否已經過日，若過日，則需重新更新所需資訊
-TodayDate = f'{datetime.date.today():%Y%m%d}'	#記錄今日的年月日(格式YYYYMMDD)
+#isChangeDay = 0	#用來判斷是否已經過日，若過日，則需重新更新所需資訊
+#TodayDate = f'{datetime.date.today():%Y%m%d}'	#記錄今日的年月日(格式YYYYMMDD)
 
 # 啟動網頁監聽
 app = Flask(__name__)
@@ -88,6 +84,69 @@ def TimeFunc():
     # 關閉連線用戶端
     client1.close()
 '''
+class AESCipher(object):
+    def __init__(self, key): 
+        self.bs = 32
+        self.key = hashlib.sha256(key.encode()).digest()
+    def encrypt(self, raw):
+        #raw = self._pad(raw)
+        raw = base64.b64encode(raw.encode('utf-8')).decode('ascii')
+        iv = Random.new().read(AES.block_size)
+        # 初始化加密器
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        #先进行aes加密
+        encrypt_aes = cipher.encrypt(self._pad(raw))
+        #用base64转成字符串形式
+        # 执行加密并转码返回bytes
+        #encrypted_text = str(base64.encodebytes(iv+encrypt_aes), encoding='utf-8')        
+        iv = str(base64.encodebytes(iv), encoding='utf-8') 
+        encrypted_text = str(base64.encodebytes(encrypt_aes), encoding='utf-8') 
+        encrypted_text = iv+encrypted_text
+        return encrypted_text 
+    def decrypt(self, enc):
+        #取出IV及加密本文
+        iv = enc[:25]
+        base64_decrypted = enc[25:]
+        #优先逆向解密base64成bytes
+        iv = base64.decodebytes(iv.encode(encoding='utf-8'))
+        base64_decrypted = base64.decodebytes(base64_decrypted.encode(encoding='utf-8'))
+        # 初始化加密器
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        #执行解密密并转码返回str
+        decrypted_text = str(cipher.decrypt(base64_decrypted),encoding='utf-8') # 执行解密密并转码返回str
+        decrypted_text = base64.b64decode(decrypted_text.encode('utf-8')).decode('utf-8')
+        return decrypted_text
+        #return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
+    def _pad(self, s):
+        while len(s) % self.bs != 0:
+            s += '\0'
+        return str.encode(s)  # 返回bytes
+    @staticmethod
+    def _unpad(s):
+        return s[:-ord(s[len(s)-1:])]
+
+# 隨機產生密碼
+def GenPass():
+    src_digits = string.digits              #string_数字  '0123456789'
+    src_uppercase = string.ascii_uppercase  #string_大写字母 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    src_lowercase = string.ascii_lowercase  #string_小写字母 'abcdefghijklmnopqrstuvwxyz'
+    src_special = string.punctuation        #string_特殊字符 '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+ 
+    #sample从序列中选择n个随机独立的元素，返回列表
+    num = random.sample(src_digits,2) #随机取1位数字
+    lower = random.sample(src_uppercase,2) #随机取1位小写字母
+    upper = random.sample(src_lowercase,2) #随机取1位大写字母
+    special = random.sample(src_special,2)  #随机取1位大写字母特殊字符
+    other = random.sample(string.ascii_letters+string.digits+string.punctuation,4) #随机取4位
+    # 生成字符串
+    # print(num, lower, upper, special, other)
+    pwd_list = num + lower + upper + special + other
+    # shuffle将一个序列中的元素随机打乱，打乱字符串
+    random.shuffle(pwd_list)
+    # 列表转字符串
+    password_str = ''.join(pwd_list)
+    #print(password_str)
+    return password_str
 
 ##### 資料庫連接 #####
 def constructor():
@@ -109,14 +168,12 @@ def write_user_stock_fountion(stock, bs, price):
                     "price": float(price),
                     "date_info": datetime.datetime.utcnow()
                     })
-    
 #----------------------------殺掉使用者的股票--------------------------
 def delete_user_stock_fountion(stock): 
     db=constructor()
     # 取得資料表
     collect = db['mydb']
-    collect.remove({"stock": stock})
-    
+    collect.remove({"stock": stock})   
 #----------------------------秀出使用者的股票--------------------------
 def show_user_stock_fountion():  
     db=constructor()
@@ -237,13 +294,104 @@ def handle_FollowEvent(event):
 def handle_PostbackEvent(event):
     print("PostbackEvent =", PostbackEvent)
     print("按下按鈕回應相關資訊", event)
-    uid = event.source.user_id
-    #PostbackEvent_text = '按下按鈕'
+
     PostbackEvent_text = str(event.postback.data).strip()
+    #現在日期
+    TodayDate = f'{datetime.date.today():%Y%m%d}'
+    uid = event.source.user_id    
+    if PostbackEvent_text=='取得帳號與密碼':
+        # 隨機產生一組密碼
+        upasswd = GenPass()
+        #到期日(半年後)
+        expiredatesixmonth = f'{datetime.date.today() + datetime.timedelta(days=180):%Y/%m/%d}'
+        #到期日(一年後)
+        expiredateoneyear = f'{datetime.date.today() + datetime.timedelta(days=360):%Y/%m/%d}'
+        
+        #從雲端資料庫中找到userid相符資料
+        db=constructor()    
+        # 取得資料表
+        results = db.accountandpassword.find({'userid':uid})
+        if results.count()==0: #即沒有找到USERID
+            db.accountandpassword.insert({"userid": uid,
+                            "password": upasswd,
+                            "expiredate": f'{datetime.date.today() + datetime.timedelta(days=180):%Y/%m/%d}',
+                            "ispay": '0',
+                            "date_info": f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}'
+                            })    
+            PostbackEvent_text = '帳號：【'+uid+'】\n'
+            PostbackEvent_text = PostbackEvent_text+'密碼：【'+upasswd+'】\n'
+            PostbackEvent_text = PostbackEvent_text+'到期日：\n'
+            PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatesixmonth+'\n'
+            #PostbackEvent_text = PostbackEvent_text+'2.一年期：'+expiredateoneyear+'\n'
+            PostbackEvent_text = PostbackEvent_text+'註：請將上述帳號及密碼填入電腦端後連線即可'    
+        else:   #曾經有申請過
+            for result in results:
+                uidvalue = f'{result["userid"]}'
+                upasswdvalue =  f'{result["password"]}'
+                expiredatevalue =  f'{result["expiredate"]}'
+                ispayvalue =  f'{result["ispay"]}'
+            #已繳費且未到期
+            expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
+            if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
+                PostbackEvent_text = '您目前仍在授權有效中，毋需重新取得帳號及密碼\n'
+                PostbackEvent_text = PostbackEvent_text+'到期日：\n'
+                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
+            elif int(ispayvalue)==1 and int(expiredate)<int(TodayDate):
+                PostbackEvent_text = '您授權日期已到期\n'
+                PostbackEvent_text = PostbackEvent_text+'到期日：\n'
+                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue+'\n'
+                PostbackEvent_text = PostbackEvent_text+'系統刻正幫您重新取得帳號及密碼，相關資料如下：\n'                
+                PostbackEvent_text = PostbackEvent_text+'原帳號：【'+uid+'】\n'
+                PostbackEvent_text = PostbackEvent_text+'新密碼：【'+upasswd+'】\n'
+                PostbackEvent_text = PostbackEvent_text+'新到期日：\n'
+                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatesixmonth+'\n'
+                #PostbackEvent_text = PostbackEvent_text+'2.一年期：'+expiredateoneyear+'\n'
+                PostbackEvent_text = PostbackEvent_text+'註：請將上述帳號及密碼填入電腦端後連線即可'    
+                #重新取得密碼及有效期限
+                try:
+                    db.accountandpassword.update_many({'userid':uid}, {'$set': {'password': upasswd, 
+                        'expiredate': f'{datetime.date.today() + datetime.timedelta(days=180):%Y/%m/%d}',
+                        'ispay': '0',
+                        'date_info': f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}'                    
+                    }})
+                except Exception as e:
+                    print('更新資料失敗(重新取得密碼及有效期限)')
+                    print(e)
+                    pass
+            elif int(ispayvalue)==0:    #有會員資料但沒有繳費
+                PostbackEvent_text = '您尚未完成完整授權程序'
+    elif PostbackEvent_text=='查詢到期日':
+        #從雲端資料庫中找到userid相符資料
+        db=constructor()    
+        # 取得資料表
+        results = db.accountandpassword.find({'userid':uid})
+        if results.count()==0: #即沒有找到USERID    
+            PostbackEvent_text = '您目前非合法授權使用者\n請取得帳號及密碼後\n並完備申請程序'
+        else:#曾經有申請過
+            for result in results:
+                uidvalue = f'{result["userid"]}'
+                upasswdvalue =  f'{result["password"]}'
+                expiredatevalue =  f'{result["expiredate"]}'
+                ispayvalue =  f'{result["ispay"]}'
+            #已繳費且未到期
+            expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
+            if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
+                PostbackEvent_text = '您目前仍在授權有效中\n'
+                PostbackEvent_text = PostbackEvent_text+'到期日：\n'
+                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
+            elif int(ispayvalue)==1 and int(expiredate)<int(TodayDate):
+                PostbackEvent_text = '您授權日期已到期\n'
+                PostbackEvent_text = PostbackEvent_text+'到期日：\n'
+                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
+            elif int(ispayvalue)==0:    #有會員資料但沒有繳費
+                PostbackEvent_text = '您尚未完成完整授權程序'
+
+
+
     line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=PostbackEvent_text)
-        )
+    )
 
 @handler.add(MessageEvent, message=TextMessage) # 處理訊息
 def handle_message(event):
@@ -310,6 +458,7 @@ def handle_message(event):
             #texttemp='('+uname+')說：'+event.message.text 
             #texttemp='('+gname+')說：'+event.message.text 
             texttemp='('+uid+')說：'+event.message.text
+            #texttemp=event.message.text
 
             userspeak=str(event.message.text).strip() #使用者講的話
             if re.match('[0-9]{4}[<>][0-9]',userspeak):     # 先判斷是否是使用者要用來存股票的
@@ -323,9 +472,14 @@ def handle_message(event):
             elif userspeak=='請問我的使用者ID':
                 message = TextSendMessage(text=str(event))
                 line_bot_api.reply_message(event.reply_token, message)
+            elif userspeak=='取得帳號與密碼':
+                # message = TextSendMessage(text='執行取得帳號與密碼')
+                # line_bot_api.reply_message(event.reply_token, message)
+                pass
             elif userspeak=='查詢到期日':
-                message = TextSendMessage(text='執行查詢到期日')
-                line_bot_api.reply_message(event.reply_token, message)
+                # message = TextSendMessage(text='執行查詢到期日')
+                # line_bot_api.reply_message(event.reply_token, message)
+                pass
             elif userspeak=='？':
                 #TemplateSendMessage - ButtonsTemplate （按鈕介面訊息）OK
                 message = TemplateSendMessage(
@@ -340,10 +494,15 @@ def handle_message(event):
                                 text='取得帳號與密碼',
                                 data='取得帳號與密碼'
                             ),
-                            MessageTemplateAction(
+                            PostbackTemplateAction(
                                 label='查詢到期日',
-                                text='查詢到期日'
+                                text='查詢到期日',
+                                data='查詢到期日'
                             ),
+                            # MessageTemplateAction(
+                            #     label='查詢到期日',
+                            #     text='查詢到期日'
+                            # ),
                             URITemplateAction(
                                 label='使用說明',
                                 uri='https://i.imgur.com/'
