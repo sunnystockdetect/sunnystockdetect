@@ -613,34 +613,36 @@ def handle_message(event):
             results = collect.find({'groupid':gid})
             if not results.count()==0: #即找到groupid
                 for result in results:
-                    if int(f'{result["isorder"]}')==1:
-                        #之後將每筆發言收錄至每一個合法授權的uiddb中
-                        # 取得資料表
-                        collect = db[giduserdb]
-                        results = collect.find()
+                    isordervalue = f'{result["isorder"]}'    
+            if isordervalue=='1': #有訂閱
+                #之後將每筆發言收錄至每一個合法授權的uiddb中
+                # 取得資料表(從giduserdb讀取群內使用者的userid)
+                collect = db[giduserdb]
+                results = collect.find()
+                for result in results:
+                    uid = f'{result["userid"]}'
+                    #再判斷其否為合法授權使用者
+                    collect = db['accountandpassword']
+                    results = collect.find({'userid':uid})
+                    if not results.count()==0: #即找到USERID
                         for result in results:
-                            uid = f'{result["userid"]}'
-                            #判斷說話的人是否有合法授權使用者
-                            collect = db['accountandpassword']
-                            results = collect.find({'userid':uid})
-                            if not results.count()==0: #即找到USERID
-                                for result in results:
-                                    #uidvalue = f'{result["userid"]}'
-                                    #upasswdvalue =  f'{result["password"]}'
-                                    expiredatevalue =  f'{result["expiredate"]}'
-                                    ispayvalue =  f'{result["ispay"]}'
-                                    #已繳費且未到期
-                                    expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
-                                    if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
-                                        uiddb = uid+'sayinfo'
-                                        collect = db[uiddb]
-                                        collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
-                                                        'groupid': gid,
-                                                        'userid': uid,
-                                                        'username': gname,
-                                                        'sayinfo': userspeak
-                                                        }) 
-
+                            #uidvalue = f'{result["userid"]}'
+                            #upasswdvalue =  f'{result["password"]}'
+                            expiredatevalue =  f'{result["expiredate"]}'
+                            ispayvalue =  f'{result["ispay"]}'
+                            #已繳費且未到期
+                            expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
+                            if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
+                                uiddb = uid+'sayinfo'
+                                collect = db[uiddb]
+                                collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
+                                                'groupid': gid,
+                                                'userid': uid,
+                                                'username': gname,
+                                                'sayinfo': userspeak
+                                                }) 
+            #關閉資料庫session
+            client.close()
             #若群組使用者輸入'滾'，則自動退群
             if userspeak=='滾':
                 message=TextSendMessage('太狠了，群組拜拜!!!')
@@ -796,8 +798,6 @@ def handle_message(event):
                 line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
         #'''
 
-
-    #取得說話者資料(針對群組)
 
     #TextSendMessage （文字訊息）OK
     #message = TextSendMessage(text=event.message.text)
@@ -1003,8 +1003,6 @@ def handle_message(event):
     #line_bot_api.push_message(uid, message) #這寫法可以(要錢)
     #line_bot_api.reply_message(uid, message) #這寫法不行
     #line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-
-
 if __name__ == "__main__":
     '''
     # 設定計時器並啟動
