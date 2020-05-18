@@ -1,4 +1,13 @@
 # -*- coding: UTF-8 -*-
+'''
+# 取得日期時間格式方式：
+	DateTimeTemp = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime())
+	t = datetime.datetime.strptime(f'{row.成交時間}', '%Y%m%d%H%M%S%f')
+	results.datevalue =	f'{datetime.datetime.now():%Y/%m/%d}'
+	results.timevalue = f'{datetime.datetime.now():%H:%M:%S.%f}'
+	TodayDate = f'{datetime.date.today():%Y%m%d}'
+	receivetime = datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f")
+'''
 from __future__ import unicode_literals
 from apscheduler.schedulers.blocking import BlockingScheduler
 # 增加了 render_template
@@ -210,6 +219,55 @@ def callback():
 def handle_join(event):
     print("JoinEvent =", JoinEvent)
     print("被邀請入群相關資訊", event)
+    gid = event.source.group_id
+    giddb = gid+'sayinfo'
+    giduserdb = gid+'userinfo'
+
+    ##### 加入群組時，依據groupid創建一個新的集合() #####
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
+    # 1.判断集合是否已存在
+    collist = db.list_collection_names()
+    # collist = mydb.collection_names()
+    if not giddb in collist:   # 判断 giddb 集合是否存在
+        #若不存在要創建一個新的集合
+        #注意: 在 MongoDB 中，集合只有在内容插入后才会创建!
+        #就是说，创建集合(数据表)后要再插入一个文档(记录)，集合才会真正创建。
+        #所以就先插入一個空資訊，再刪除它
+        collect = db[giddb]
+        collect.insert({'saydatetime': '',
+                        'userid': '',
+                        'username': '',
+                        'sayinfo': ''
+                        }) 
+        collect.delete_one({'userid':''}) 
+    # 2.判断集合是否已存在
+    collist = db.list_collection_names()
+    # collist = mydb.collection_names()
+    if not giduserdb in collist:   # 判断 giduserdb 集合是否存在
+        #若不存在要創建一個新的集合
+        #注意: 在 MongoDB 中，集合只有在内容插入后才会创建!
+        #就是说，创建集合(数据表)后要再插入一个文档(记录)，集合才会真正创建。
+        #所以就先插入一個空資訊，再刪除它
+        collect = db[giduserdb]
+        collect.insert({'userid': '',
+                        'username': ''
+                        }) 
+        collect.delete_one({'userid':''}) 
+        ##### 在grouporder集合，依據gid建立資料 #####
+        # 建立連線用戶端
+        #client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+        # 取得資料庫
+        #db = client['sunnystockdb']
+        collect = db['grouporder']
+        collect.insert({'groupid': gid,
+                        'isorder': '0'
+                        })
+    else:
+        #print("集合已存在！")
+        pass
     newcoming_text = "謝謝邀請「晴股偵測儀」來至此群組！！我會盡力為大家服務的～"
     line_bot_api.reply_message(
             event.reply_token,
@@ -217,11 +275,42 @@ def handle_join(event):
         )
 
 
-@handler.add(LeaveEvent)    #經測試，退群不會觸發
+@handler.add(LeaveEvent)    #經測試，退群會觸發
 def handle_leave(event):
     print("leave Event =", LeaveEvent)
     print("我被踢掉了QQ 相關資訊", event)
     leave_text = "好狠啊!!我被踢掉了QQ"
+    gid = event.source.group_id
+    giddb = gid+'sayinfo'
+    giduserdb = gid+'userinfo'
+
+    ##### 退出群組時，依據groupid刪除該集合 #####
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
+    # 1.判断集合是否已存在
+    collist = db.list_collection_names()
+    # collist = mydb.collection_names()
+    if giddb in collist:   # 判断 giddb 集合是否存在
+        db.drop_collection(giddb)
+    else:
+        #print("集合不存在！")
+        pass
+    # 2.判断集合是否已存在
+    collist = db.list_collection_names()
+    # collist = mydb.collection_names()
+    if giduserdb in collist:   # 判断 giduserdb 集合是否存在
+        db.drop_collection(giduserdb)
+    else:
+        #print("集合不存在！")
+        pass
+    ##### 若被退出群組則刪除在grouporder集合中的相關資料 #####
+    # 建立連線用戶端
+    #client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    #db = client['sunnystockdb']
+    db.grouporder.delete_one({'groupid':gid})  
     #LeaveEvent事件不會回傳reply_token，所以line_bot_api.reply_message不能用 
     # line_bot_api.reply_message(
     #         event.reply_token,
@@ -233,6 +322,25 @@ def handle_leave(event):
 def handle_MemberJoinedEvent(event):
     print("MemberJoinedEvent =", MemberJoinedEvent)
     print("有人入群相關資訊", event)
+    #取得userid
+    uid=event.joined.members[0].user_id 
+    #取得群組的ID及使用者名稱
+    groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.joined.members[0].user_id)
+    gid=event.source.group_id  
+    gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
+    giduserdb = gid+'userinfo'
+
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
+    # 取得資料表
+    collect = db[giduserdb]
+    results = collect.find({'userid':uid})
+    if results.count()==0: #即沒有找到USERID
+        collect.insert({'userid':uid,
+                        'username': gname
+                        })
     #MemberJoinedEvent_text = '('+str(event.joined.members[0].user_id)+')歡迎入群'
     MemberJoinedEvent_text = '「晴股偵測儀」歡迎您入群'
     line_bot_api.reply_message(
@@ -247,9 +355,17 @@ def handle_MemberLeftEvent(event):
     print("有人退群相關資訊", event)
     #MemberJoinedEvent_text = '('+str(event.joined.members[0].user_id)+')歡迎入群'
     uid = event.left.members[0].user_id
-    gid = event.source.group_id
+    #取得群組的ID及使用者名稱
+    gid=event.source.group_id
+    giduserdb = gid+'userinfo'  
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
+    # 取得資料表
+    collect = db[giduserdb]
+    collect.delete_one({'userid':uid}) 
     MemberLeftEvent_text = '「晴股偵測儀」依依不捨目送您離去...'
-
     #MemberLeftEvent事件不會回傳reply_token，所以line_bot_api.reply_message不能用  
     # line_bot_api.reply_message(
     #         event.reply_token,
@@ -298,8 +414,9 @@ def handle_PostbackEvent(event):
     PostbackEvent_text = str(event.postback.data).strip()
     #現在日期
     TodayDate = f'{datetime.date.today():%Y%m%d}'
-    uid = event.source.user_id    
-    if PostbackEvent_text=='取得帳號與密碼':
+    uid = event.source.user_id   
+
+    if PostbackEvent_text=='取得帳號與密碼':    #個人
         # 隨機產生一組密碼
         upasswd = GenPass()
         #到期日(半年後)
@@ -360,7 +477,7 @@ def handle_PostbackEvent(event):
                     pass
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
                 PostbackEvent_text = '您尚未完成完整授權程序'
-    elif PostbackEvent_text=='查詢到期日':
+    elif PostbackEvent_text=='查詢到期日':  #個人
         #從雲端資料庫中找到userid相符資料
         db=constructor()    
         # 取得資料表
@@ -385,9 +502,41 @@ def handle_PostbackEvent(event):
                 PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
                 PostbackEvent_text = '您尚未完成完整授權程序'
-
-
-
+    elif PostbackEvent_text=='訂閱「聽我說」':  #群組
+        gid = event.source.group_id
+        ##### 訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
+        # 建立連線用戶端
+        client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+        # 取得資料庫
+        db = client['sunnystockdb']
+        results = db.grouporder.find({'groupid':gid})
+        if not results.count()==0: #即找到groupid
+            # 更新紀錄   
+            try:
+                db.grouporder.update_one({'groupid': gid}, [{'$set': {'isorder': '1'}}])
+            except Exception as e:
+                print('更新資料失敗(訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1)')
+                print(e)
+                pass      
+        PostbackEvent_text = '完成訂閱「聽我說」'
+    elif PostbackEvent_text=='取消訂閱「聽我說」':  #群組
+        gid = event.source.group_id
+        ##### 取消訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
+        # 建立連線用戶端
+        client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+        # 取得資料庫
+        db = client['sunnystockdb']
+        results = db.grouporder.find({'groupid':gid})
+        if not results.count()==0: #即找到groupid
+            # 更新紀錄   
+            try:
+                db.grouporder.update_one({'groupid': gid}, [{'$set': {'isorder': '0'}}])
+            except Exception as e:
+                print('更新資料失敗(取消訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1)')
+                print(e)
+                pass 
+        PostbackEvent_text = '已取消訂閱「聽我說」'
+    #將操作後資訊輸出至LINE
     line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=PostbackEvent_text)
@@ -412,13 +561,14 @@ def handle_message(event):
             ustatus=profile.status_message  #使用者狀態訊息
             '''
             uid=event.source.user_id    #使用者ID
-
-            #群組的ID與名稱試不出來
+            #群組的ID能取得
+            #群組名稱當無法取得
             groupprofile=line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
-            gid=event.source.group_id  #不能這樣使用
+            gid=event.source.group_id  
             gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
-
-            #經查取得群組或聊天室內所有用戶的 ID、此功能需要 Premium 帳號才能使用
+            giddb = gid+'sayinfo'
+            giduserdb = gid+'userinfo'
+            #經查取得群組或聊天室內所有用戶的 ID、此功能需要 Premium 帳號才能使用(寫信至LINE官方確認過)
             #member_ids_res=line_bot_api.get_group_member_ids(event.source.group_id)
 
             #gid='111'
@@ -429,7 +579,36 @@ def handle_message(event):
             #texttemp='('+gname+')在群組('+gid+')說：'+event.message.text
             #texttemp='('+uname+')說：'+event.message.text
             texttemp='('+gname+')說：'+event.message.text
-            userspeak=str(event.message.text).strip() #使用者講的話   
+            userspeak=str(event.message.text).strip() #使用者講的話  
+
+            #若有人發言，先取得其userid及username 存入giduserinfo集合中(目的收集該群組中使用者ID及使用者名稱)
+            # 建立連線用戶端
+            client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+            # 取得資料庫
+            db = client['sunnystockdb']
+            # 取得資料表
+            collect = db[giduserdb]
+            results = collect.find({'userid':uid})
+            if results.count()==0: #即沒有找到USERID
+                collect.insert({'userid':uid,
+                                'username': gname
+                                })
+            #先判斷該群組是否有訂閱「聽我說」
+            # 取得資料表
+            collect = db['grouporder']
+            results = collect.find({'groupid':gid})
+            if not results.count()==0: #即找到groupid
+                for result in results:
+                    if int(f'{result["isorder"]}')==1:
+                        #之後將每筆發言收錄至giddb中 
+                        # 取得資料表
+                        collect = db[giddb]
+                        collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
+                                        'userid': uid,
+                                        'username': gname,
+                                        'sayinfo': userspeak
+                                        }) 
+ 
             #若群組使用者輸入'滾'，則自動退群
             if userspeak=='滾':
                 message=TextSendMessage('太狠了，群組拜拜!!!')
@@ -438,10 +617,41 @@ def handle_message(event):
             elif userspeak=='請問我的使用者ID':
                 message = TextSendMessage(text=str(event))
                 line_bot_api.reply_message(event.reply_token, message)
+            elif userspeak=='？':
+                #TemplateSendMessage - ButtonsTemplate （按鈕介面訊息）OK
+                message = TemplateSendMessage(
+                    alt_text='Buttons template',
+                    template=ButtonsTemplate(
+                        thumbnail_image_url='https://i.imgur.com/mBavrc2.png',
+                        title='基本設定(群組)',
+                        text='請選擇所需功能：',
+                        actions=[
+                            PostbackTemplateAction(
+                                label='訂閱「聽我說」',
+                                text='訂閱「聽我說」',
+                                data='訂閱「聽我說」'
+                            ),
+                            PostbackTemplateAction(
+                                label='取消訂閱「聽我說」',
+                                text='取消訂閱「聽我說」',
+                                data='取消訂閱「聽我說」'
+                            ),
+                            # MessageTemplateAction(
+                            #     label='查詢到期日',
+                            #     text='查詢到期日'
+                            # ),
+                            URITemplateAction(
+                                label='使用說明',
+                                uri='https://drive.google.com/open?id=1khETEvf5y3gkpOS8cBYL69Cik0mg1lWO'
+                            )
+                        ]
+                    )
+                )
+                line_bot_api.reply_message(event.reply_token, message)
             else: 
-                message = TextSendMessage(texttemp)  
-                line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-
+                # message = TextSendMessage(texttemp)  
+                # line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+                pass
         #elif str(event.source.type)=='user':
         else:   #若不是群組說話就是使用者了
             #取得說話者資料(針對個人)
@@ -486,7 +696,7 @@ def handle_message(event):
                     alt_text='Buttons template',
                     template=ButtonsTemplate(
                         thumbnail_image_url='https://i.imgur.com/mBavrc2.png',
-                        title='基本設定',
+                        title='基本設定(個人)',
                         text='請選擇所需功能：',
                         actions=[
                             PostbackTemplateAction(
@@ -499,18 +709,33 @@ def handle_message(event):
                                 text='查詢到期日',
                                 data='查詢到期日'
                             ),
-                            # MessageTemplateAction(
-                            #     label='查詢到期日',
-                            #     text='查詢到期日'
-                            # ),
+                            MessageTemplateAction(
+                                label='測試函數區',
+                                text='測試函數區'
+                            ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://i.imgur.com/'
+                                uri='https://drive.google.com/open?id=1khETEvf5y3gkpOS8cBYL69Cik0mg1lWO'
                             )
                         ]
                     )
                 )
                 line_bot_api.reply_message(event.reply_token, message)
+            elif userspeak=='測試函數區':    #測試函數區
+                '''
+                ##### 在grouporder集合，依據gid建立資料 #####
+                # 建立連線用戶端
+                gid = 'qqqqq'
+                client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+                # 取得資料庫
+                db = client['sunnystockdb']
+                collect = db['grouporder']
+                collect.insert({'groupid': gid,
+                                'isorder': '0'
+                                })
+                '''
+  
+                pass
             else:
                 message = TextSendMessage(texttemp)  
                 line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
