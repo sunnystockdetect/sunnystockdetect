@@ -44,7 +44,7 @@ app = Flask(__name__)
 
 # LINE 聊天機器人的基本資料
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config.ini', encoding='utf-8-sig')
 
 # Channel Access Token
 #line_bot_api = LineBotApi('fkZZVXaAF/e48XU6uQ5m/Ma1UdPVo2Cz7s+risWsSmh4NyMUGj0OqzxPWfoq02jah1VQa+9uZTUWDWP/ItVz2ILXr8EaKACOM/XttyexVjZl8XP4us8yztBS//D+PHai6iyDoJk/nTx/2RSuxO9yAAdB04t89/1O/w1cDnyilFU=')
@@ -167,8 +167,13 @@ def constructor():
 
 
 #----------------------------儲存使用者的股票--------------------------
-def write_user_stock_fountion(stock, bs, price):  
-    db=constructor()
+def write_user_stock_fountion(stock, bs, price):
+    #資料庫連接
+    #db=constructor()
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
     # 取得資料表
     collect = db['mydb']
     collect.insert({"stock": stock,
@@ -177,18 +182,35 @@ def write_user_stock_fountion(stock, bs, price):
                     "price": float(price),
                     "date_info": datetime.datetime.utcnow()
                     })
+    #關閉資料庫session
+    client.close()
+
 #----------------------------殺掉使用者的股票--------------------------
 def delete_user_stock_fountion(stock): 
-    db=constructor()
+    #資料庫連接
+    #db=constructor()
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
     # 取得資料表
     collect = db['mydb']
-    collect.remove({"stock": stock})   
+    collect.remove({"stock": stock}) 
+    #關閉資料庫session
+    client.close()  
 #----------------------------秀出使用者的股票--------------------------
 def show_user_stock_fountion():  
-    db=constructor()
+    #資料庫連接
+    #db=constructor()
+    # 建立連線用戶端
+    client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+    # 取得資料庫
+    db = client['sunnystockdb']
     # 取得資料表
     collect = db['mydb']
     cel=list(collect.find({"data": 'care_stock'}))
+    #關閉資料庫session
+    client.close() 
     return cel
 
 @app.route("/")
@@ -228,6 +250,9 @@ def handle_join(event):
     client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
     # 取得資料庫
     db = client['sunnystockdb']
+    # 經測試，這邊因為找網頁POST方式，故資料庫開啟後，不需用db.close()進行關閉，因為會有錯誤
+    #資料庫連接
+    #db=constructor()
     '''
     # 1.判断集合是否已存在
     collist = db.list_collection_names()
@@ -271,6 +296,8 @@ def handle_join(event):
     else:
         #print("集合已存在！")
         pass
+    #關閉資料庫session
+    client.close()
     newcoming_text = "謝謝邀請「晴股偵測儀」來至此群組！！我會盡力為大家服務的～"
     line_bot_api.reply_message(
             event.reply_token,
@@ -292,6 +319,9 @@ def handle_leave(event):
     client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
     # 取得資料庫
     db = client['sunnystockdb']
+    #資料庫連接
+    #db=constructor()
+
     '''
     # 1.判断集合是否已存在
     collist = db.list_collection_names()
@@ -321,7 +351,8 @@ def handle_leave(event):
     #         event.reply_token,
     #         TextMessage(text=leave_text)
     #     )
-
+    #關閉資料庫session
+    client.close() 
 
 @handler.add(MemberJoinedEvent)    #有人加入群組時觸發
 def handle_MemberJoinedEvent(event):
@@ -335,10 +366,12 @@ def handle_MemberJoinedEvent(event):
     gname=groupprofile.display_name #會顯示出和使用者一樣的名稱
     giduserdb = gid+'userinfo'
 
-    # 建立連線用戶端
+    # # 建立連線用戶端
     client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
     # 取得資料庫
     db = client['sunnystockdb']
+    #資料庫連接
+    #db=constructor()
     # 取得資料表
     collect = db[giduserdb]
     results = collect.find({'userid':uid})
@@ -346,6 +379,8 @@ def handle_MemberJoinedEvent(event):
         collect.insert({'userid':uid,
                         'username': gname
                         })
+    #關閉資料庫session
+    client.close()                         
     #MemberJoinedEvent_text = '('+str(event.joined.members[0].user_id)+')歡迎入群'
     MemberJoinedEvent_text = '「晴股偵測儀」歡迎您入群'
     line_bot_api.reply_message(
@@ -362,14 +397,19 @@ def handle_MemberLeftEvent(event):
     uid = event.left.members[0].user_id
     #取得群組的ID及使用者名稱
     gid=event.source.group_id
-    giduserdb = gid+'userinfo'  
-    # 建立連線用戶端
+    giduserdb = gid+'userinfo'
+
+    # # 建立連線用戶端
     client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
     # 取得資料庫
     db = client['sunnystockdb']
+    #資料庫連接
+    #db=constructor()    
     # 取得資料表
     collect = db[giduserdb]
     collect.delete_one({'userid':uid}) 
+    #關閉資料庫session
+    client.close() 
     MemberLeftEvent_text = '「晴股偵測儀」依依不捨目送您離去...'
     #MemberLeftEvent事件不會回傳reply_token，所以line_bot_api.reply_message不能用  
     # line_bot_api.reply_message(
@@ -377,7 +417,7 @@ def handle_MemberLeftEvent(event):
     #         TextMessage(text=MemberLeftEvent)
     #     )
     #經測試line_bot_api.push_message只能傳訊給有彼此加好友的UID
-    #且無法用GID的方式傳訊
+    #且無法用gid的方式傳訊
     # line_bot_api.push_message(        #失敗
     #         uid,
     #         TextMessage(text=MemberLeftEvent)
@@ -428,9 +468,13 @@ def handle_PostbackEvent(event):
         expiredatesixmonth = f'{datetime.date.today() + datetime.timedelta(days=180):%Y/%m/%d}'
         #到期日(一年後)
         expiredateoneyear = f'{datetime.date.today() + datetime.timedelta(days=360):%Y/%m/%d}'
-        
+    
+        # 建立連線用戶端
+        client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+        # 取得資料庫
+        db = client['sunnystockdb']
         #從雲端資料庫中找到userid相符資料
-        db=constructor()    
+        #db=constructor()    
         # 取得資料表
         results = db.accountandpassword.find({'userid':uid})
         if results.count()==0: #即沒有找到USERID
@@ -447,10 +491,6 @@ def handle_PostbackEvent(event):
             #PostbackEvent_text = PostbackEvent_text+'2.一年期：'+expiredateoneyear+'\n'
             PostbackEvent_text = PostbackEvent_text+'註：請將上述帳號及密碼填入電腦端後連線即可'    
             ##### 申請帳號密碼時，依據userid創建一個新的同步產生userdb資料表集合 #####
-            # 建立連線用戶端
-            #client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
-            # 取得資料庫
-            #db = client['sunnystockdb']
             # 判断集合是否已存在
             collist = db.list_collection_names()
             # collist = mydb.collection_names()
@@ -503,9 +543,16 @@ def handle_PostbackEvent(event):
                     pass
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
                 PostbackEvent_text = '您尚未完成完整授權程序'
+            #關閉資料庫session
+            client.close()        
     elif PostbackEvent_text=='查詢到期日':  #個人
         #從雲端資料庫中找到userid相符資料
-        db=constructor()    
+        # 建立連線用戶端
+        client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+        # 取得資料庫
+        db = client['sunnystockdb']
+        #資料庫連接
+        #db=constructor()   
         # 取得資料表
         results = db.accountandpassword.find({'userid':uid})
         if results.count()==0: #即沒有找到USERID    
@@ -528,6 +575,8 @@ def handle_PostbackEvent(event):
                 PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
                 PostbackEvent_text = '您尚未完成完整授權程序'
+        #關閉資料庫session
+        client.close()         
     elif PostbackEvent_text=='訂閱「聽我說」':  #群組
         PostbackEvent_text = '請依照下列命令格式鍵入：\nORDER:[群組名稱]'
     elif PostbackEvent_text=='取消訂閱「聽我說」':  #群組
@@ -535,8 +584,10 @@ def handle_PostbackEvent(event):
         ##### 取消訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
         # 建立連線用戶端
         client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
-        # 取得資料┌
+        # 取得資料
         db = client['sunnystockdb']
+        #資料庫連接
+        #db=constructor()
         results = db.grouporder.find({'groupid':gid})
         if not results.count()==0: #即找到groupid
             # 更新紀錄   
@@ -546,6 +597,8 @@ def handle_PostbackEvent(event):
                 print('更新資料失敗(取消訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1)')
                 print(e)
                 pass 
+        #關閉資料庫session
+        client.close() 
         PostbackEvent_text = '已取消訂閱「聽我說」'
     #將操作後資訊輸出至LINE
     line_bot_api.reply_message(
@@ -594,11 +647,12 @@ def handle_message(event):
             texttemp='('+gname+')說：'+event.message.text
             userspeak=str(event.message.text).strip() #使用者講的話
 
-            #若有人發言，先取得其userid及username 存入giduserinfo集合中(目的收集該群組中使用者ID及使用者名稱)
             # 建立連線用戶端
             client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
             # 取得資料庫
-            db = client['sunnystockdb']    
+            db = client['sunnystockdb'] 
+            #資料庫連接
+            #db=constructor()   
             #若有人發言，先取得其userid及username 存入giduserinfo集合中(目的收集該群組中使用者ID及使用者名稱)
             # 取得資料表
             collect = db[giduserdb]
@@ -620,32 +674,34 @@ def handle_message(event):
                 collect = db[giduserdb]
                 results = collect.find()
                 for result in results:
-                    uid = f'{result["userid"]}'
-                    #再判斷其否為合法授權使用者
-                    collect = db['accountandpassword']
-                    results = collect.find({'userid':uid})
-                    if not results.count()==0: #即找到USERID
-                        for result in results:
-                            #uidvalue = f'{result["userid"]}'
-                            #upasswdvalue =  f'{result["password"]}'
-                            expiredatevalue =  f'{result["expiredate"]}'
-                            ispayvalue =  f'{result["ispay"]}'
-                            #已繳費且未到期
-                            expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
-                            if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
-                                uiddb = uid+'sayinfo'
-                                collect = db[uiddb]
-                                collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
-                                                'groupid': gid,
-                                                'userid': uid,
-                                                'username': gname,
-                                                'sayinfo': userspeak
-                                                }) 
+                    uidvalue = f'{result["userid"]}'
+                    #先判斷是不是自已，若是，則不存儲自己說的話於自己的uiddb中
+                    if not uidvalue==uid:
+                        #再判斷其否為合法授權使用者
+                        collect = db['accountandpassword']
+                        results = collect.find({'userid':uidvalue})
+                        if not results.count()==0: #即找到USERID
+                            for result in results:
+                                #uidvalue = f'{result["userid"]}'
+                                #upasswdvalue =  f'{result["password"]}'
+                                expiredatevalue =  f'{result["expiredate"]}'
+                                ispayvalue =  f'{result["ispay"]}'
+                                #已繳費且未到期
+                                expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
+                                if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
+                                    uiddb = uidvalue+'sayinfo'
+                                    collect = db[uiddb]
+                                    collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
+                                                    'groupid': gid,
+                                                    'userid': uid,
+                                                    'username': gname,
+                                                    'sayinfo': userspeak
+                                                    }) 
             #關閉資料庫session
-            client.close()
+            client.close()                                         
             #若群組使用者輸入'滾'，則自動退群
             if userspeak=='滾':
-                message=TextSendMessage('太狠了，群組拜拜!!!')
+                message=TextSendMessage('太狠了，真的不需要我了嗎？群組拜拜!!!')
                 line_bot_api.reply_message(event.reply_token, message)
                 line_bot_api.leave_group(event.source.group_id) #可以自動退出
             elif userspeak=='請問我的使用者ID':
@@ -690,6 +746,8 @@ def handle_message(event):
                 client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
                 # 取得資料庫
                 db = client['sunnystockdb']
+                #資料庫連接
+                #db=constructor()
                 collect = db['grouporder']
                 results = collect.find({'groupid':gid})
                 if not results.count()==0: #即找到groupid
@@ -701,7 +759,9 @@ def handle_message(event):
                     except Exception as e:
                         print('更新資料失敗(訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1)')
                         print(e)
-                        pass      
+                        pass
+                #關閉資料庫session
+                client.close() 
                 message = TextSendMessage('完成訂閱「聽我說」')  
                 line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
             else: 
@@ -790,8 +850,9 @@ def handle_message(event):
                                 'groupname':'',
                                 'isorder': '0'
                                 })
-                '''
-  
+                #關閉資料庫session
+                client.close()                
+                ''' 
                 pass
             else:
                 message = TextSendMessage(texttemp)  
