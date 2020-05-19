@@ -489,7 +489,9 @@ def handle_PostbackEvent(event):
                             "password": upasswd,
                             "expiredate": f'{datetime.date.today() + datetime.timedelta(days=180):%Y/%m/%d}',
                             "ispay": '0',
-                            "date_info": f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}'
+                            "date_info": f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}',
+                            "logindatetime": '',
+                            "onlinedatetime": ''                        
                             })    
             PostbackEvent_text = '帳號：【'+uid+'】\n'
             PostbackEvent_text = PostbackEvent_text+'密碼：【'+upasswd+'】\n'
