@@ -142,18 +142,25 @@ def GenPass():
     src_special = string.punctuation        #string_特殊字符 '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
  
     #sample从序列中选择n个随机独立的元素，返回列表
-    num = random.sample(src_digits,2) #随机取1位数字
-    lower = random.sample(src_uppercase,2) #随机取1位小写字母
-    upper = random.sample(src_lowercase,2) #随机取1位大写字母
-    special = random.sample(src_special,2)  #随机取1位大写字母特殊字符
+    num = random.sample(src_digits,2) #随机取2位数字
+    lower = random.sample(src_uppercase,2) #随机取2位小写字母
+    upper = random.sample(src_lowercase,2) #随机取2位大写字母
+    special = random.sample(src_special,2)  #随机取2位大写字母特殊字符
     other = random.sample(string.ascii_letters+string.digits+string.punctuation,4) #随机取4位
     # 生成字符串
     # print(num, lower, upper, special, other)
     pwd_list = num + lower + upper + special + other
+    #因為configparser.ConfigParser()讀取到%會變成進行Interpolation動作，故要將%轉換成別的字元
+    pwd_listTemp=[]
+    for i in pwd_list:
+        if i=='%':
+            i='!'
+        pwd_listTemp.append(i)
+        
     # shuffle将一个序列中的元素随机打乱，打乱字符串
-    random.shuffle(pwd_list)
+    random.shuffle(pwd_listTemp)
     # 列表转字符串
-    password_str = ''.join(pwd_list)
+    password_str = ''.join(pwd_listTemp)
     #print(password_str)
     return password_str
 
@@ -542,7 +549,7 @@ def handle_PostbackEvent(event):
                     print(e)
                     pass
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
-                PostbackEvent_text = '您尚未完成完整授權程序'
+                PostbackEvent_text = '您曾申請過授權\n但尚未完成完整授權程序'
             #關閉資料庫session
             client.close()        
     elif PostbackEvent_text=='查詢到期日':  #個人
@@ -574,7 +581,7 @@ def handle_PostbackEvent(event):
                 PostbackEvent_text = PostbackEvent_text+'到期日：\n'
                 PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
-                PostbackEvent_text = '您尚未完成完整授權程序'
+                PostbackEvent_text = '您曾申請過授權\n但尚未完成完整授權程序'
         #關閉資料庫session
         client.close()         
     elif PostbackEvent_text=='訂閱「聽我說」':  #群組
