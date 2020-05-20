@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+# -*- coding:UTF-8 -*-
 '''
 # 取得日期時間格式方式：
 	DateTimeTemp = time.strftime("%Y/%m/%d %H:%M:%S", time.localtime())
@@ -689,23 +689,27 @@ def handle_message(event):
                         #再判斷其否為合法授權使用者
                         collect = db['accountandpassword']
                         results = collect.find({'userid':uidvalue})
-                        if not results.count()==0: #即找到USERID
+                        if not results.count()==0: #即找到非自己的其它USERID
                             for result in results:
                                 #uidvalue = f'{result["userid"]}'
                                 #upasswdvalue =  f'{result["password"]}'
                                 expiredatevalue =  f'{result["expiredate"]}'
                                 ispayvalue =  f'{result["ispay"]}'
-                                #已繳費且未到期
+                                LoginDateTime = f'{result["logindatetime"]}'
+                                OnlineDateTime = f'{result["onlinedatetime"]}'
+                                #(已繳費)且(未到期)且(判定為在線，即電腦端有登入者:若小於10秒，則表示在線)
+                                DateTimeTemp = TodayDate + f'{datetime.datetime.now():%H%M%S}'
                                 expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
-                                if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
-                                    uiddb = uidvalue+'sayinfo'
-                                    collect = db[uiddb]
-                                    collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
-                                                    'groupid': gid,
-                                                    'userid': uid,
-                                                    'username': gname,
-                                                    'sayinfo': userspeak
-                                                    }) 
+                                if not OnlineDateTime=='':
+                                    if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate) and (int(DateTimeTemp)-int(OnlineDateTime)<10):
+                                        uiddb = uidvalue+'sayinfo'
+                                        collect = db[uiddb]
+                                        collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
+                                                        'groupid': gid,
+                                                        'userid': uid,
+                                                        'username': gname,
+                                                        'sayinfo': userspeak
+                                                        }) 
             #關閉資料庫session
             client.close()                                         
             #若群組使用者輸入'滾'，則自動退群
