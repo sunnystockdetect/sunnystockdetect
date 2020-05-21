@@ -526,17 +526,20 @@ def handle_PostbackEvent(event):
             expiredate = expiredatevalue[:4]+expiredatevalue[5:7]+expiredatevalue[-2:]
             if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
                 PostbackEvent_text = '您目前仍在授權有效中，毋需重新取得帳號及密碼\n'
-                PostbackEvent_text = PostbackEvent_text+'到期日：\n'
-                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
+                PostbackEvent_text = PostbackEvent_text+'原申請資料如下：\n'
+                PostbackEvent_text = PostbackEvent_text+'1.帳號：'+uidvalue+'\n'
+                PostbackEvent_text = PostbackEvent_text+'2.密碼：'+upasswdvalue+'\n'
+                PostbackEvent_text = PostbackEvent_text+'3.到期日：\n'
+                PostbackEvent_text = PostbackEvent_text+'(1)半年期：'+expiredatevalue
             elif int(ispayvalue)==1 and int(expiredate)<int(TodayDate):
                 PostbackEvent_text = '您授權日期已到期\n'
                 PostbackEvent_text = PostbackEvent_text+'到期日：\n'
-                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue+'\n'
+                PostbackEvent_text = PostbackEvent_text+'(1)半年期：'+expiredatevalue+'\n'
                 PostbackEvent_text = PostbackEvent_text+'系統刻正幫您重新取得帳號及密碼，相關資料如下：\n'                
                 PostbackEvent_text = PostbackEvent_text+'原帳號：【'+uid+'】\n'
                 PostbackEvent_text = PostbackEvent_text+'新密碼：【'+upasswd+'】\n'
                 PostbackEvent_text = PostbackEvent_text+'新到期日：\n'
-                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatesixmonth+'\n'
+                PostbackEvent_text = PostbackEvent_text+'(1)半年期：'+expiredatesixmonth+'\n'
                 #PostbackEvent_text = PostbackEvent_text+'2.一年期：'+expiredateoneyear+'\n'
                 PostbackEvent_text = PostbackEvent_text+'註：請將上述帳號及密碼填入電腦端後連線即可'    
                 #重新取得密碼及有效期限
@@ -577,11 +580,11 @@ def handle_PostbackEvent(event):
             if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
                 PostbackEvent_text = '您目前仍在授權有效中\n'
                 PostbackEvent_text = PostbackEvent_text+'到期日：\n'
-                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
+                PostbackEvent_text = PostbackEvent_text+'(1)半年期：'+expiredatevalue
             elif int(ispayvalue)==1 and int(expiredate)<int(TodayDate):
                 PostbackEvent_text = '您授權日期已到期\n'
                 PostbackEvent_text = PostbackEvent_text+'到期日：\n'
-                PostbackEvent_text = PostbackEvent_text+'1.半年期：'+expiredatevalue
+                PostbackEvent_text = PostbackEvent_text+'(1)半年期：'+expiredatevalue
             elif int(ispayvalue)==0:    #有會員資料但沒有繳費
                 PostbackEvent_text = '您曾申請過授權\n但尚未完成完整授權程序'
         #關閉資料庫session
