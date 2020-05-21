@@ -527,8 +527,8 @@ def handle_PostbackEvent(event):
             if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate):
                 PostbackEvent_text = '您目前仍在授權有效中，毋需重新取得帳號及密碼\n'
                 PostbackEvent_text = PostbackEvent_text+'原申請資料如下：\n'
-                PostbackEvent_text = PostbackEvent_text+'1.帳號：'+uidvalue+'\n'
-                PostbackEvent_text = PostbackEvent_text+'2.密碼：'+upasswdvalue+'\n'
+                PostbackEvent_text = PostbackEvent_text+'1.帳號：【'+uidvalue+'】\n'
+                PostbackEvent_text = PostbackEvent_text+'2.密碼：【'+upasswdvalue+'】\n's
                 PostbackEvent_text = PostbackEvent_text+'3.到期日：\n'
                 PostbackEvent_text = PostbackEvent_text+'(1)半年期：'+expiredatevalue
             elif int(ispayvalue)==1 and int(expiredate)<int(TodayDate):
