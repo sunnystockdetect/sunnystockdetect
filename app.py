@@ -612,6 +612,9 @@ def handle_PostbackEvent(event):
         #關閉資料庫session
         client.close() 
         PostbackEvent_text = '已取消訂閱「聽我說」'
+    elif PostbackEvent_text=='下載電腦端軟體':  #群組
+        PostbackEvent_text='請使用您的個人電腦，於下列網址下載晴股偵測儀「聽我說」電腦端軟體\n'
+        PostbackEvent_text+='網址：【https://drive.google.com/file/d/1SVMdFtpPvqWU_uS4GdEWvv5TzMbe5eZX/view?usp=sharing】'    
     #將操作後資訊輸出至LINE
     line_bot_api.reply_message(
             event.reply_token,
@@ -715,8 +718,8 @@ def handle_message(event):
                                                         }) 
             #關閉資料庫session
             client.close()                                         
-            #若群組使用者輸入'滾'，則自動退群
-            if userspeak=='滾':
+            #若群組使用者輸入'我命令你滾'，則自動退群
+            if userspeak=='我命令你滾':
                 message=TextSendMessage('太狠了，真的不需要我了嗎？群組拜拜!!!')
                 line_bot_api.reply_message(event.reply_token, message)
                 line_bot_api.leave_group(event.source.group_id) #可以自動退出
@@ -741,6 +744,11 @@ def handle_message(event):
                                 label='取消訂閱「聽我說」',
                                 text='取消訂閱「聽我說」',
                                 data='取消訂閱「聽我說」'
+                            ),
+                            PostbackTemplateAction(
+                                label='下載電腦端軟體',
+                                text='下載電腦端軟體',
+                                data='下載電腦端軟體'
                             ),
                             # MessageTemplateAction(
                             #     label='查詢到期日',
@@ -841,10 +849,10 @@ def handle_message(event):
                                 text='查詢到期日',
                                 data='查詢到期日'
                             ),
-                            MessageTemplateAction(
-                                label='測試函數區',
-                                text='測試函數區'
-                            ),
+                            # MessageTemplateAction(
+                            #     label='測試函數區',
+                            #     text='測試函數區'
+                            # ),
                             URITemplateAction(
                                 label='使用說明',
                                 uri='https://drive.google.com/open?id=1khETEvf5y3gkpOS8cBYL69Cik0mg1lWO'
