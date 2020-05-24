@@ -737,7 +737,7 @@ def handle_message(event):
                     template=ButtonsTemplate(
                         thumbnail_image_url='https://i.imgur.com/mBavrc2.png',
                         title='基本設定(群組)',
-                        text='鍵入'？Q'可進入「問題回饋選單」\n請選擇所需功能：',
+                        text='鍵入【？Q】可進入「問題回饋選單」\n請選擇所需功能：',
                         actions=[
                             PostbackTemplateAction(
                                 label='訂閱「聽我說」',
@@ -773,7 +773,7 @@ def handle_message(event):
                     template=ButtonsTemplate(
                         thumbnail_image_url='https://i.imgur.com/mBavrc2.png',
                         title='基本設定(群組)',
-                        text='鍵入'？'請進入「主選單」\n請選擇所需功能：',
+                        text='鍵入【？】請進入「主選單」\n請選擇所需功能：',
                         actions=[
                             PostbackTemplateAction(
                                 label='問題回饋',
@@ -805,8 +805,8 @@ def handle_message(event):
                 collect = db['questionandanswer']
                 # 更新紀錄   
                 try:
-                        collect.insert({'questiondatetime':f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}'
-                                        'groupid': gid,
+                        collect.insert({'questiondatetime':f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}',
+                                        'groupid':gid,
                                         'userid':uid,
                                         'username': gname,
                                         'questioncontent':userspeak
