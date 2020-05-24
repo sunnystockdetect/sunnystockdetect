@@ -590,7 +590,7 @@ def handle_PostbackEvent(event):
         #關閉資料庫session
         client.close()         
     elif PostbackEvent_text=='訂閱「聽我說」':  #群組
-        PostbackEvent_text = '請依照下列命令格式鍵入：\nORDER:[群組名稱]'
+        PostbackEvent_text = '請依照下列命令格式鍵入：\nORDER:[群組名稱]\n註：只需訂閱一次即可，若本群組已有人訂閱，毋需再次訂閱'
     elif PostbackEvent_text=='取消訂閱「聽我說」':  #群組
         gid = event.source.group_id
         ##### 取消訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
