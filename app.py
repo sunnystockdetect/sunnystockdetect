@@ -737,7 +737,7 @@ def handle_message(event):
                     template=ButtonsTemplate(
                         thumbnail_image_url='https://i.imgur.com/mBavrc2.png',
                         title='基本設定(群組)',
-                        text='請選擇所需功能：',
+                        text='鍵入'？Q'可進入「問題回饋選單」\n請選擇所需功能：',
                         actions=[
                             PostbackTemplateAction(
                                 label='訂閱「聽我說」',
@@ -754,6 +754,27 @@ def handle_message(event):
                                 text='下載電腦端軟體',
                                 data='下載電腦端軟體'
                             ),
+                            # MessageTemplateAction(
+                            #     label='查詢到期日',
+                            #     text='查詢到期日'
+                            # ),
+                            URITemplateAction(
+                                label='使用說明',
+                                uri='https://drive.google.com/open?id=1FtXCEULQE0cSHBqwMMPBf_jh5p4ZABGL'
+                            )
+                        ]
+                    )
+                )
+                line_bot_api.reply_message(event.reply_token, message)
+            elif userspeak=='？Q' or userspeak=='？q' or userspeak=='?Q' or userspeak=='?q':
+                #TemplateSendMessage - ButtonsTemplate （按鈕介面訊息）OK
+                message = TemplateSendMessage(
+                    alt_text='Buttons template',
+                    template=ButtonsTemplate(
+                        thumbnail_image_url='https://i.imgur.com/mBavrc2.png',
+                        title='基本設定(群組)',
+                        text='鍵入'？'請進入「主選單」\n請選擇所需功能：',
+                        actions=[
                             PostbackTemplateAction(
                                 label='問題回饋',
                                 text='問題回饋',
@@ -770,8 +791,35 @@ def handle_message(event):
                         ]
                     )
                 )
-                line_bot_api.reply_message(event.reply_token, message)
-            elif userspeak[:6]=='ORDER：' or userspeak[:6]=='ORDER:':
+                line_bot_api.reply_message(event.reply_token, message)                
+            elif userspeak[:2]=='Q：' or userspeak[:2]=='q:':
+                gid = event.source.group_id
+                userspeak = userspeak[2:].strip()   #問題內文
+                ##### 在questionandanswer集合，新增一筆資料 #####
+                # 建立連線用戶端
+                client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+                # 取得資料庫
+                db = client['sunnystockdb']
+                #資料庫連接
+                #db=constructor()
+                collect = db['questionandanswer']
+                # 更新紀錄   
+                try:
+                        collect.insert({'questiondatetime':f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}'
+                                        'groupid': gid,
+                                        'userid':uid,
+                                        'username': gname,
+                                        'questioncontent':userspeak
+                                        })
+                except Exception as e:
+                    print('更新資料失敗(訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1)')
+                    print(e)
+                    pass
+                #關閉資料庫session
+                client.close() 
+                message = TextSendMessage('完成訂閱「聽我說」')  
+                line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
+            elif userspeak[:6]=='ORDER：' or userspeak[:6]=='order:':
                 gid = event.source.group_id
                 gname = userspeak[6:].strip()
                 ##### 訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
