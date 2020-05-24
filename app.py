@@ -590,13 +590,31 @@ def handle_PostbackEvent(event):
         #關閉資料庫session
         client.close()         
     elif PostbackEvent_text=='訂閱「聽我說」':  #群組
-        PostbackEvent_text = '請依照下列命令格式鍵入：\nORDER:[群組名稱]\n註：只需訂閱一次即可，若本群組已有人訂閱，毋需再次訂閱'
+        ##### 檢查本群組是否已經訂閱「聽我說」 #####
+        gid = event.source.group_id
+        # 建立連線用戶端
+        client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
+        # 取得資料庫
+        db = client['sunnystockdb']
+        #資料庫連接
+        #db=constructor()
+        collect = db['grouporder']
+        results = collect.find({'groupid':gid})
+        if not results.count()==0: #即找到groupid
+            isordervalue =  f'{result["isorder"]}'
+        #關閉資料庫session
+        client.close() 
+        if isordervalue=='0':
+            PostbackEvent_text='【本群組尚未訂閱「聽我說」】\n【註：只需訂閱一次即可，若本群組已有人訂閱，毋需再次訂閱】\n'
+        elif isordervalue=='1':
+            PostbackEvent_text='【本群組已訂閱「聽我說」】\n【註：只需訂閱一次即可，若本群組已有人訂閱，毋需再次訂閱】\n'   
+        PostbackEvent_text += '請依照下列命令格式鍵入：\nORDER:[群組名稱]'
     elif PostbackEvent_text=='取消訂閱「聽我說」':  #群組
         gid = event.source.group_id
         ##### 取消訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
         # 建立連線用戶端
         client = MongoClient('mongodb+srv://root:rootjimmystock313@cluster0-racxf.gcp.mongodb.net/test?retryWrites=true&w=majority')
-        # 取得資料
+        # 取得資┌
         db = client['sunnystockdb']
         #資料庫連接
         #db=constructor()
@@ -616,8 +634,7 @@ def handle_PostbackEvent(event):
         PostbackEvent_text='請使用您的個人電腦，於下列網址下載晴股偵測儀「聽我說」電腦端軟體\n'
         PostbackEvent_text+='網址：【https://drive.google.com/file/d/1SVMdFtpPvqWU_uS4GdEWvv5TzMbe5eZX/view?usp=sharing】'    
     elif PostbackEvent_text=='問題回饋':  #群組
-        PostbackEvent_text = '請依照下列命令格式鍵入：\nQ:[您要回饋的內文]'    
-    
+        PostbackEvent_text = '請依照下列命令格式鍵入：\nQ:[您要回饋的內文]'
     
     #將操作後資訊輸出至LINE
     line_bot_api.reply_message(
