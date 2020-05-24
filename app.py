@@ -792,7 +792,7 @@ def handle_message(event):
                     )
                 )
                 line_bot_api.reply_message(event.reply_token, message)                
-            elif userspeak[:2]=='Q：' or userspeak[:2]=='q:':
+            elif userspeak[:2]=='Q：' or userspeak[:2]=='Q:' or userspeak[:2]=='q：' or userspeak[:2]=='q:':
                 gid = event.source.group_id
                 userspeak = userspeak[2:].strip()   #問題內文
                 ##### 在questionandanswer集合，新增一筆資料 #####
@@ -805,21 +805,21 @@ def handle_message(event):
                 collect = db['questionandanswer']
                 # 更新紀錄   
                 try:
-                        collect.insert({'questiondatetime':f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}',
-                                        'groupid':gid,
-                                        'userid':uid,
-                                        'username': gname,
-                                        'questioncontent':userspeak
-                                        })
+                    collect.insert({'questiondatetime':f'{datetime.datetime.today():%Y/%m/%d %H:%M:%S}',
+                                    'groupid':gid,
+                                    'userid':uid,
+                                    'username': gname,
+                                    'questioncontent':userspeak
+                                    })
                 except Exception as e:
-                    print('更新資料失敗(訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1)')
+                    print('更新資料失敗(問題回饋)')
                     print(e)
                     pass
                 #關閉資料庫session
                 client.close() 
-                message = TextSendMessage('完成訂閱「聽我說」')  
+                message = TextSendMessage('感謝您的問題回饋')  
                 line_bot_api.reply_message(event.reply_token, message) #這寫法可以(不要錢)
-            elif userspeak[:6]=='ORDER：' or userspeak[:6]=='order:':
+            elif userspeak[:6]=='ORDER：' or userspeak[:6]=='order：' or userspeak[:6]=='ORDER:' or userspeak[:6]=='order:':
                 gid = event.source.group_id
                 gname = userspeak[6:].strip()
                 ##### 訂閱「聽我說」在grouporder集合，依據gid將其對應的isorder=1 #####
