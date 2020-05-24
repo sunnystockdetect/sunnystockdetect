@@ -633,7 +633,7 @@ def handle_PostbackEvent(event):
         PostbackEvent_text = '已取消訂閱「聽我說」'
     elif PostbackEvent_text=='下載電腦端軟體':  #群組
         PostbackEvent_text='請使用您的個人電腦，於下列網址下載晴股偵測儀「聽我說」電腦端軟體\n'
-        PostbackEvent_text+='網址：【https://drive.google.com/file/d/1SVMdFtpPvqWU_uS4GdEWvv5TzMbe5eZX/view?usp=sharing】'    
+        PostbackEvent_text+='網址：【https://drive.google.com/open?id=1SVMdFtpPvqWU_uS4GdEWvv5TzMbe5eZX】'    
     elif PostbackEvent_text=='問題回饋':  #群組
         PostbackEvent_text = '請依照下列命令格式鍵入：\nQ:[您要回饋的內文]'
     
