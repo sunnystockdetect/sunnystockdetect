@@ -615,6 +615,10 @@ def handle_PostbackEvent(event):
     elif PostbackEvent_text=='下載電腦端軟體':  #群組
         PostbackEvent_text='請使用您的個人電腦，於下列網址下載晴股偵測儀「聽我說」電腦端軟體\n'
         PostbackEvent_text+='網址：【https://drive.google.com/file/d/1SVMdFtpPvqWU_uS4GdEWvv5TzMbe5eZX/view?usp=sharing】'    
+    elif PostbackEvent_text=='問題回饋':  #群組
+        PostbackEvent_text = '請依照下列命令格式鍵入：\nQ:[您要回饋的內文]'    
+    
+    
     #將操作後資訊輸出至LINE
     line_bot_api.reply_message(
             event.reply_token,
@@ -749,6 +753,11 @@ def handle_message(event):
                                 label='下載電腦端軟體',
                                 text='下載電腦端軟體',
                                 data='下載電腦端軟體'
+                            ),
+                            PostbackTemplateAction(
+                                label='問題回饋',
+                                text='問題回饋',
+                                data='問題回饋'
                             ),
                             # MessageTemplateAction(
                             #     label='查詢到期日',
