@@ -760,7 +760,7 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://drive.google.com/open?id=1FtXCEULQE0cSHBqwMMPBf_jh5p4ZABGL'
+                                uri='https://drive.google.com/open?id=19hvdRkoQWejlTlknmJa_t7VFGljuCAID'
                             )
                         ]
                     )
