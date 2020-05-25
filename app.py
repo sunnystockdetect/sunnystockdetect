@@ -734,7 +734,7 @@ def handle_message(event):
                                     if  int(ispayvalue)==1 and int(expiredate)>=int(TodayDate) and (int(DateTimeTemp)-int(OnlineDateTime)<10):
                                         uiddb = uidvalue+'sayinfo'
                                         collect = db[uiddb]
-                                        collect.insert({'saydatetime': datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S%f"),
+                                        collect.insert({'saydatetime': datetime.datetime.now().strftime("%Y%m%d%H%M%S%f"),
                                                         'groupid': gid,
                                                         'userid': uid,
                                                         'username': gname,
