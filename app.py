@@ -634,7 +634,7 @@ def handle_PostbackEvent(event):
         PostbackEvent_text = '已取消訂閱「聽我說」'
     elif PostbackEvent_text=='下載電腦端軟體':  #群組
         PostbackEvent_text='請使用您的個人電腦，於下列網址下載晴股偵測儀「聽我說」電腦端軟體\n'
-        PostbackEvent_text+='網址：【https://drive.google.com/file/d/1pmrmya51mhOJoNUoRXrdFgRdkCVSD4a8/view?usp=sharing】\n\n'
+        PostbackEvent_text+='網址：【https://drive.google.com/file/d/1vy7YmA2pt0N9j8PjcBCUPKuJkv_vvD--/view?usp=sharing】\n\n'
         PostbackEvent_text+='若您電腦作業系統為WinXP或Win7，請先安裝中文語音庫，下載網址如下：\n'
         PostbackEvent_text+='網址：【https://drive.google.com/file/d/1USZUG3ofcY1a4wiJt5o-HHUbsn-eJBug/view?usp=sharing】\n\n'            
     elif PostbackEvent_text=='問題回饋':  #群組
