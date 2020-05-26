@@ -781,7 +781,7 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://drive.google.com/open?id=1dBCfB6GqXUSRmcHUVOCvgnbRVQvHyYps'
+                                uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
                             )
                         ]
                     )
@@ -807,7 +807,7 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://drive.google.com/open?id=1dBCfB6GqXUSRmcHUVOCvgnbRVQvHyYps'
+                                uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
                             )
                         ]
                     )
