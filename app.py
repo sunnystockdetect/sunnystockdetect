@@ -634,9 +634,9 @@ def handle_PostbackEvent(event):
         PostbackEvent_text = '已取消訂閱「聽我說」'
     elif PostbackEvent_text=='下載電腦端軟體':  #群組
         PostbackEvent_text='請使用您的個人電腦，於下列網址下載晴股偵測儀「聽我說」電腦端軟體\n'
-        PostbackEvent_text+='網址：【https://drive.google.com/file/d/1vy7YmA2pt0N9j8PjcBCUPKuJkv_vvD--/view?usp=sharing】\n\n'
+        PostbackEvent_text+='網址：【 https://mega.nz/file/aMpDQQjB#bynidY--0lIczvhiFkUYvLO2PM660jmQUsyXBGBCf30 】\n\n'
         PostbackEvent_text+='若您電腦作業系統為WinXP或Win7，請先安裝中文語音庫，下載網址如下：\n'
-        PostbackEvent_text+='網址：【https://drive.google.com/file/d/1USZUG3ofcY1a4wiJt5o-HHUbsn-eJBug/view?usp=sharing】\n\n'            
+        PostbackEvent_text+='網址：【 https://mega.nz/file/Wd5VSCoA#CEgEuEdIwZkDV7Lnp6dze-i-uw1bZvRJmANuvsuJKko 】\n\n'            
     elif PostbackEvent_text=='問題回饋':  #群組
         PostbackEvent_text = '請依照下列命令格式鍵入：\nQ:[您要回饋的內文]'
     
@@ -782,6 +782,7 @@ def handle_message(event):
                             URITemplateAction(
                                 label='使用說明',
                                 uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
+                                #uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
                             )
                         ]
                     )
@@ -807,7 +808,8 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
+                                uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
+                                #uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
                             )
                         ]
                     )
@@ -933,7 +935,8 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
+                                uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
+                                #uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
                             )
                         ]
                     )
