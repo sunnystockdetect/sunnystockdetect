@@ -807,7 +807,7 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
+                                uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
                             )
                         ]
                     )
@@ -933,7 +933,7 @@ def handle_message(event):
                             # ),
                             URITemplateAction(
                                 label='使用說明',
-                                uri='https://drive.google.com/open?id=1a0VUMUsBD2DkrKdGJjqQmOct6KznN__1'
+                                uri='https://mega.nz/file/bN51naiI#fpAzUc9jlsZmD5AtfzFBskfGGkKuo6yS-RQrDZQC9AA'
                             )
                         ]
                     )
